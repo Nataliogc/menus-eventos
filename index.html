@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menús de Eventos – Cumbria & Guadiana</title>
+  <!-- Librerías para PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root{
+      --brand:#0a6aa1;
+      --brand-2:#00aeef;
+      --ink:#1b2633;
+      --muted:#667786;
+      --card:#ffffff;
+      --bg:#f6fafc;
+      --gold:#a58c5f;
+      --radius:18px
+    }
+    .wrap{
+      max-width:1100px;
+      margin:28px auto 56px;
+      padding:0 18px;
+      color:var(--ink);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif
+    }
+    .hero{
+      background:linear-gradient(120deg,#e8f4ff,#f7fbff 65%,#e8f6ff);
+      border-radius:var(--radius);
+      box-shadow:0 10px 30px rgba(0,0,0,.06);
+      margin:18px 0 20px;
+      overflow:hidden
+    }
+    .hero-in{
+      display:flex;
+      gap:18px;
+      align-items:center;
+      padding:22px
+    }
+    .emoji{
+      font-size:42px;
+      line-height:1;
+      background:#fff;
+      border-radius:999px;
+      width:64px;
+      height:64px;
+      display:grid;
+      place-items:center;
+      box-shadow:0 6px 20px rgba(0,0,0,.05)
+    }
+    .hero h1{
+      margin:0;
+      font-size:1.95rem;
+      letter-spacing:-.4px;
+      color:#064b73
+    }
+    .hero p{
+      margin:.35rem 0 0;
+      color:var(--muted)
+    }
+    .meta{
+      color:#6a7a88;
+      font-size:.95rem;
+      margin:6px 2px 18px;
+      text-align:center
+    }
+    .dash{
+      border:2px solid var(--gold);
+      width:96px;
+      margin:10px auto 20px
+    }
+
+    details{
+      background:var(--bg);
+      border:1px solid #e6eef5;
+      border-radius:14px;
+      margin:14px 0;
+      padding:12px 14px
+    }
+    summary{
+      cursor:pointer;
+      list-style:none;
+      display:flex;
+      align-items:center;
+      gap:10px
+    }
+    summary::marker{
+      display:none
+    }
+    summary .title{
+      font-weight:700;
+      color:#0a4f79
+    }
+    .plato{
+      margin:8px 0 12px;
+    }
+    .plato h5{
+      margin:0 0 4px 0;
+      font-size:1rem;
+      font-weight:600;
+      color:#1b2633
+    }
+    .plato .ing{
+      font-size:.85rem;
+      color:#6a7a88;
+      margin:4px 0
+    }
+    .alerg-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:4px
+    }
+    .alerg-row .pill{
+      font-size:.78rem;
+      background:#f1f7fb;
+      border:1px solid #cfe3f5;
+      border-radius:999px;
+      padding:2px 8px;
+      color:#0c5b8b
+    }
+    .incluye{
+      background:#fff;
+      border:1px dashed #c6d9e6;
+      padding:10px 12px;
+      border-radius:12px;
+      color:#2d5c76;
+      margin-top:12px;
+      font-size:.95rem
+    }
+
+    .price-badge{
+      margin-left:auto;
+      background:linear-gradient(90deg,#0a6aa1,#00aeef);
+      color:#fff;
+      border-radius:12px;
+      padding:8px 12px;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      box-shadow:0 8px 18px rgba(0,107,161,.18)
+    }
+    .price-badge .pp{
+      font-weight:800;
+      letter-spacing:.2px
+    }
+    .price-badge .pp small{
+      font-weight:600;
+      opacity:.95
+    }
+    .price-badge .iva{
+      font-size:.78rem;
+      opacity:.9;
+      margin-top:2px
+    }
+
+    .alergenos-legend{
+      background:#fff;
+      border:1px solid #dce6ef;
+      border-radius:12px;
+      padding:10px 14px;
+      margin:16px 0;
+      color:#2d4b5c;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+      gap:8px;
+      font-size:.9rem
+    }
+    .alergenos-legend div{
+      display:flex;
+      align-items:center;
+      gap:6px
+    }
+    .alergenos-legend .code{
+      background:#e6f2fa;
+      border-radius:6px;
+      padding:2px 6px;
+      font-weight:700;
+      color:#045a91;
+      min-width:20px;
+      text-align:center
+    }
+
+    .catalogo,.especiales{
+      margin-top:6px
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(1,minmax(0,1fr));
+      gap:12px
+    }
+    @media(min-width:680px){
+      .grid{
+        grid-template-columns:repeat(2,minmax(0,1fr))
+      }
+    }
+    @media(min-width:980px){
+      .grid{
+        grid-template-columns:repeat(3,minmax(0,1fr))
+      }
+    }
+    .chip-card{
+      background:#fff;
+      border:1px solid #e6edf5;
+      border-radius:16px;
+      padding:12px 14px;
+      box-shadow:0 6px 20px rgba(0,0,0,.04);
+      transition:transform .18s ease, box-shadow .18s ease
+    }
+    .chip-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 26px rgba(0,0,0,.06)
+    }
+    .chip-top{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between
+    }
+    .chip-title{
+      font-weight:700;
+      color:#0a4f79;
+      line-height:1.35
+    }
+    .chip-meta{
+      font-size:.86rem;
+      color:#6a7a88;
+      margin-top:4px
+    }
+    .chip-ing{
+      font-size:.8rem;
+      color:#6a7a88;
+      margin-top:6px
+    }
+    .chip-alerg{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:8px
+    }
+    .chip-alerg .pill{
+      font-size:.72rem;
+      background:#fff7e6;
+      border:1px solid #f5d7a1;
+      border-radius:999px;
+      padding:2px 8px;
+      color:#8c5a00
+    }
+    .suppl-badge{
+      background:#0a6aa1;
+      color:#fff;
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:.82rem;
+      font-weight:800;
+      white-space:nowrap;
+      box-shadow:0 6px 16px rgba(0,107,161,.18)
+    }
+    .suppl-sub{
+      font-size:.75rem;
+      color:#6a7a88;
+      margin-top:4px
+    }
+
+    /* Formulario */
+    .card{
+      background:var(--card);
+      border:1px solid #e6eef5;
+      border-radius:14px;
+      padding:14px;
+      margin-top:20px
+    }
+    .grid-form{
+      display:grid;
+      gap:12px
+    }
+    @media(min-width:700px){
+      .grid-form{
+        grid-template-columns:repeat(3,minmax(0,1fr))
+      }
+    }
+    .row{
+      display:grid;
+      grid-template-columns:130px 1fr;
+      gap:8px;
+      align-items:center
+    }
+    .row label{
+      color:#32546a;
+      font-weight:700
+    }
+    .row input,.row select,.row textarea{
+      border:1px solid #d7e6f1;
+      background:#fff;
+      border-radius:10px;
+      padding:.55rem .7rem;
+      font-size:1rem
+    }
+    .btns{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+      flex-wrap:wrap
+    }
+    .btn{
+      border:1px solid #0a6aa1;
+      background:#0a6aa1;
+      color:#fff;
+      border-radius:12px;
+      padding:.55rem .9rem;
+      font-weight:700;
+      cursor:pointer
+    }
+    .btn.alt{
+      background:#fff;
+      color:#0a6aa1
+    }
+    .preview{
+      background:#fff;
+      border:1px solid #e6eef5;
+      border-radius:12px;
+      padding:12px;
+      margin-top:14px
+    }
+    .preview h4{
+      margin:.2rem 0 .6rem;
+      color:#0a4f79
+    }
+    .preview ul{
+      margin:.2rem 0 .4rem 1.2em
+    }
+    .preview li{
+      margin:4px 0
+    }
+    .ent-grid{
+      display:grid;
+      grid-template-columns:repeat(1,minmax(0,1fr));
+      gap:8px
+    }
+    @media(min-width:880px){
+      .ent-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr))
+      }
+    }
+    .ent-item{
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      background:#fff;
+      border:1px solid #e6eef5;
+      border-radius:10px;
+      padding:8px
+    }
+    .dist-grid{
+      display:grid;
+      grid-template-columns:repeat(1,minmax(0,1fr));
+      gap:8px
+    }
+    .dist-item{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      border:1px solid #e6eef5;
+      border-radius:10px;
+      padding:8px
+    }
+    .dist-item b{
+      flex:1
+    }
+    .dist-item input{
+      width:100px;
+      text-align:center
+    }
+    .total-box{
+      font-weight:700;
+      color:#0a6aa1;
+      margin-top:10px;
+      font-size:1.1rem
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap" id="menus">
+  <!-- Cabecera con tu imagen -->
+  <div class="hero">
+    <div class="hero-in">
+      <div style="
+        position: relative;
+        width: 100%;
+        height: 300px;
+        background-image: url('https://photos.fife.usercontent.google.com/pw/AP1GczPRpN1wshGBtibRfCSKIF267-Mmi8NAljU5tpHfnIB4JQf8on0K3oou-7HX1KHDBEQUec-i3mzrXY0OlHaXqNA8AxD3wg=w1400-h869-s-no-gm?authuser=0');
+        background-size: cover;
+        background-position: center;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 30px rgba(0,0,0,.1);
+        overflow: hidden;
+      ">
+        <div style="
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.7));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+        ">
+          <h1 style="
+            color: white;
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+          ">
+            Menús Eventos
+          </h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="meta">Última actualización: <span id="fechaHoy"></span> · Ámbito: Ambos hoteles</p>
+  <hr class="dash"/>
+
+  <!-- Leyenda de alérgenos -->
+  <div class="alergenos-legend">
+    <div><span class="code">1</span> Pescado</div>
+    <div><span class="code">2</span> Frutos secos</div>
+    <div><span class="code">3</span> Lácteos</div>
+    <div><span class="code">4</span> Moluscos</div>
+    <div><span class="code">5</span> Cereales con gluten</div>
+    <div><span class="code">6</span> Crustáceos</div>
+    <div><span class="code">7</span> Huevo</div>
+    <div><span class="code">8</span> Cacahuetes</div>
+    <div><span class="code">9</span> Soja</div>
+    <div><span class="code">10</span> Apio</div>
+    <div><span class="code">11</span> Mostaza</div>
+    <div><span class="code">12</span> Sésamo</div>
+    <div><span class="code">13</span> Altramuces</div>
+    <div><span class="code">14</span> Sulfitos</div>
+  </div>
+
+  <!-- ======= Menús 1–8 ======= -->
+
+  <details open>
+    <summary>
+      <span class="title">Menú Nº1</span>
+      <span class="price-badge">
+        <span class="pp">30 € <small>/persona</small></span>
+        <span class="iva">IVA incl.</span>
+      </span>
+    </summary>
+    <div class="plato">
+      <h5>Entrantes al centro</h5>
+      <p>A elegir 4 entrantes al centro.</p>
+    </div>
+    <div class="plato">
+      <h5>Plato principal (a elegir)</h5>
+      <p>Dorada, tomate y piquillo con germinado de cebollino (1)</p>
+      <div class="ing"><b>Ingredientes:</b> dorada, tomate, piquillo, cebollino.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <p>Brocheta de presa ibérica 100% bellota (11)</p>
+      <div class="ing"><b>Ingredientes:</b> presa, calabacín, mostaza, cebolla, carne.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Postre</h5>
+      <p>Brownie con helado (3,5)</p>
+      <div class="ing"><b>Ingredientes:</b> harina, leche, huevo, chocolate, helado.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="incluye">Incluye vino blanco y tinto de la región, agua mineral, cervezas, refrescos, café y espumoso.</div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="title">Menú Nº2</span>
+      <span class="price-badge">
+        <span class="pp">34 € <small>/persona</small></span>
+        <span class="iva">IVA incl.</span>
+      </span>
+    </summary>
+    <div class="plato">
+      <h5>Entrantes al centro</h5>
+      <p>A elegir 4 entrantes al centro.</p>
+    </div>
+    <div class="plato">
+      <h5>Plato principal (a elegir)</h5>
+      <p>Tacos de atún, tallarines de calamar, ali-oli y dulce de pimiento rojo (1,3)</p>
+      <div class="ing"><b>Ingredientes:</b> atún, calamar, aceite, leche, mermelada de pimiento rojo.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <p>Buey a la parrilla con chimichurri y patata (14)</p>
+      <div class="ing"><b>Ingredientes:</b> buey, patata, especias, cebolla, limón, vinagre.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Postre</h5>
+      <p>Hojaldre con crema y fruta (3,5)</p>
+      <div class="ing"><b>Ingredientes:</b> hojaldre, leche, harina, vainilla, frutas.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="incluye">Incluye vino blanco y tinto de la región, agua mineral, cervezas, refrescos, café y espumoso.</div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="title">Menú Nº3</span>
+      <span class="price-badge">
+        <span class="pp">38 € <small>/persona</small></span>
+        <span class="iva">IVA incl.</span>
+      </span>
+    </summary>
+    <div class="plato">
+      <h5>Entrantes al centro</h5>
+      <p>A elegir 4 entrantes al centro.</p>
+    </div>
+    <div class="plato">
+      <h5>Plato principal (a elegir)</h5>
+      <p>Bacalao, piñones, pasas y reducción de Jerez dulce y Oporto con micromezclum (1,2,14)</p>
+      <div class="ing"><b>Ingredientes:</b> bacalao, piñones, pasas, Jerez, Oporto.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <p>Cochinillo tostón</p>
+      <div class="ing"><b>Ingredientes:</b> cochinillo, manzana.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Postre</h5>
+      <p>Crème brûlée (3,7)</p>
+      <div class="ing"><b>Ingredientes:</b> leche, huevos, azúcar, vainilla.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="incluye">Incluye vino blanco y tinto de la región, agua mineral, cervezas, refrescos, café y espumoso.</div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="title">Menú Nº4</span>
+      <span class="price-badge">
+        <span class="pp">42 € <small>/persona</small></span>
+        <span class="iva">IVA incl.</span>
+      </span>
+    </summary>
+    <div class="plato">
+      <h5>Entrantes al centro</h5>
+      <p>A elegir 4 entrantes al centro.</p>
+    </div>
+    <div class="plato">
+      <h5>Plato principal (a elegir)</h5>
+      <p>Rape negro, gamba roja, jugo de crustáceos y crujiente de tinta (1,6)</p>
+      <div class="ing"><b>Ingredientes:</b> rape, crustáceos, arroz, tinta.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <p>Solomillo de ternera, escalope de foie, manzana, vainilla al Oporto (5)</p>
+      <div class="ing"><b>Ingredientes:</b> solomillo, foie, cereales con gluten, manzana, vainilla, Oporto.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Postre</h5>
+      <p>Pastel de crema de almendra (5,3)</p>
+      <div class="ing"><b>Ingredientes:</b> hojaldre, almendra, huevo, azúcar.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="incluye">Incluye vino blanco y tinto de la región, agua mineral, cervezas, refrescos, café y espumoso.</div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="title">Menú Nº5</span>
+      <span class="price-badge">
+        <span class="pp">46 € <small>/persona</small></span>
+        <span class="iva">IVA incl.</span>
+      </span>
+    </summary>
+    <div class="plato">
+      <h5>Entrantes al centro</h5>
+      <p>A elegir 4 entrantes al centro.</p>
+    </div>
+    <div class="plato">
+      <h5>Plato principal (a elegir)</h5>
+      <p>Suprema de merluza con tallarines de calamar y gamba alistada (1,4,6)</p>
+      <div class="ing"><b>Ingredientes:</b> merluza, calamar, gamba.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <p>Paletilla de lechal asada (5,14)</p>
+      <div class="ing"><b>Ingredientes:</b> paletilla, patatas, harina, maizena, cebolla, vino, aceite.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Postre</h5>
+      <p>Bomba de chocolate con helado (3,5,7)</p>
+      <div class="ing"><b>Ingredientes:</b> mantequilla, chocolate, huevo, azúcar, cacao, dextrosa, glucosa.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="incluye">Incluye vino blanco y tinto de la región, agua mineral, cervezas, refrescos, café y espumoso.</div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="title">Menú Nº6 (degustación)</span>
+      <span class="price-badge">
+        <span class="pp">44 € <small>/persona</small></span>
+        <span class="iva">IVA incl.</span>
+      </span>
+    </summary>
+    <div class="plato">
+      <h5>Primer plato</h5>
+      <p>Ensalada de langostinos, mango y aguacate</p>
+      <div class="ing"><b>Ingredientes:</b> langostinos, mango, aguacate.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Segundo plato (surtido frío/caldo)</h5>
+      <p>Jamón ibérico, queso manchego, dos langostinos y dos gambas, hojaldre de salmón, tortita de camarones, croquetas de gorgonzola y tosta de la casa (3,5,6)</p>
+      <div class="ing"><b>Ingredientes:</b> jamón, queso, langostinos, gambas, hojaldre de salmón, camarones, croquetas de gorgonzola, tosta de la casa.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Tercer plato (a elegir)</h5>
+      <p>Tacos de atún, tallarines de calamar, ali-oli y dulce de pimiento rojo (1,3)</p>
+      <div class="ing"><b>Ingredientes:</b> atún, calamar, aceite, leche, mermelada de pimiento rojo.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <p>Buey a la parrilla con chimichurri y patata (14)</p>
+      <div class="ing"><b>Ingredientes:</b> buey, patata, especias, cebolla, limón, vinagre.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Postre</h5>
+      <p>Brownie con helado (3,5)</p>
+      <div class="ing"><b>Ingredientes:</b> harina, leche, huevo, chocolate, helado.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="incluye">Incluye vino blanco y tinto de la región, agua mineral, cervezas, refrescos, café y espumoso.</div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="title">Menú Nº7 (degustación)</span>
+      <span class="price-badge">
+        <span class="pp">50 € <small>/persona</small></span>
+        <span class="iva">IVA incl.</span>
+      </span>
+    </summary>
+    <div class="plato">
+      <h5>Entrantes al centro</h5>
+      <p>Buñuelos de queso (3,5,7)</p>
+      <div class="ing"><b>Ingredientes:</b> queso, huevo, harina, pan, aceite de oliva.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <p>Tataki de salmón y langostinos (1,6,9,12,14)</p>
+      <div class="ing"><b>Ingredientes:</b> salmón, langostino, vinagre, soja, sésamo, azúcar, cebolleta, huevas de trucha.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Primer plato</h5>
+      <p>Concha de marisco al gratén (langostino, vieira y mejillón) (3,4,6,7)</p>
+      <div class="ing"><b>Ingredientes:</b> langostino, vieira, mejillón, harina, leche, queso, mantequilla, huevo.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Segundo plato</h5>
+      <p>½ Suprema de merluza con tallarines de calamar y gamba alistada (1,4,6)</p>
+      <div class="ing"><b>Ingredientes:</b> merluza, calamar, gamba.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Tercer plato</h5>
+      <p>½ Solomillo de ternera, escalope de foie, manzana, vainilla al Oporto (14)</p>
+      <div class="ing"><b>Ingredientes:</b> solomillo, foie de pato, manzana, vainilla, Oporto.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Postre</h5>
+      <p>Tiramisú (3,5,7,14)</p>
+      <div class="ing"><b>Ingredientes:</b> harina, huevo, queso, café, cacao, coñac.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="incluye">Incluye vino blanco y tinto de la región, agua mineral, cervezas, refrescos, café y espumoso.</div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="title">Menú Nº8 (degustación)</span>
+      <span class="price-badge">
+        <span class="pp">60 € <small>/persona</small></span>
+        <span class="iva">IVA incl.</span>
+      </span>
+    </summary>
+    <div class="plato">
+      <h5>Entrantes al centro</h5>
+      <p>Surtido de ibéricos con pan y tomate (jamón ibérico, lomo, salchichón, chorizo y queso) (5)</p>
+      <div class="ing"><b>Ingredientes:</b> pan, tomate, jamón, lomo, salchichón, chorizo, queso.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <p>Corte de foie con ensalada (14)</p>
+      <div class="ing"><b>Ingredientes:</b> lechugas, foie gras, aceite de oliva, vinagre, P.X.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Primer plato</h5>
+      <p>Ensalada con ½ langosta, frutas tropicales y vinagre de Fórum Chardonnay (6,14)</p>
+      <div class="ing"><b>Ingredientes:</b> langosta, frutas tropicales, vinagre Fórum Chardonnay.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Segundo plato</h5>
+      <p>½ Rape negro, gamba roja, jugo de crustáceos y crujiente de tinta (1,4,6)</p>
+      <div class="ing"><b>Ingredientes:</b> rape negro, gamba roja, arroz, tinta.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Tercer plato</h5>
+      <p>½ Cochinillo asado, puré de membrillo y patata trufada</p>
+      <div class="ing"><b>Ingredientes:</b> cochinillo, membrillo, patata, trufa.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="plato">
+      <h5>Postre</h5>
+      <p>Bomba de chocolate (3,5,7)</p>
+      <div class="ing"><b>Ingredientes:</b> mantequilla, chocolate, huevo, azúcar, cacao.</div>
+      <div class="alerg-row"></div>
+    </div>
+    <div class="incluye">Incluye vino blanco y tinto de la región, agua mineral, cervezas, refrescos, café y espumoso.</div>
+  </details>
+
+  <!-- Catálogo de entrantes -->
+  <details class="catalogo">
+    <summary><span class="title">Entrantes disponibles (catálogo)</span> <span class="tag" style="margin-left:8px;font-size:.78rem;background:#eef7ff;border:1px solid #cbe5fb;border-radius:999px;padding:2px 8px;color:#0a4f79">elige 4</span></summary>
+    <div class="grid" id="grid-catalogo">
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Croqueta de jamón con tomate cassé</div></div><div class="chip-meta">Crujiente por fuera, cremosa por dentro.</div><div class="chip-ing"><b>Ingredientes:</b> leche, jamón, harina, huevo.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Setas a la sartén con patatas y cremoso de yema</div></div><div class="chip-meta">Salteado suave con toque de yema.</div><div class="chip-ing"><b>Ingredientes:</b> setas, patatas, huevo.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Huevo a 62º con parmentier y pulpitos fritos</div></div><div class="chip-meta">Baja temperatura y contraste crujiente.</div><div class="chip-ing"><b>Ingredientes:</b> huevo, leche, moluscos.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Escalope de foie asado, cebolla caramelizada y pan de especias</div></div><div class="chip-meta">Dulce‑salado con especias.</div><div class="chip-ing"><b>Ingredientes:</b> foie, cebolla, azúcar, harina, mantequilla.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Ensalada de jamón de pato, dulce de higos y granada</div></div><div class="chip-meta">Fresco y con contraste ácido.</div><div class="chip-ing"><b>Ingredientes:</b> pato, higo, granada, lechugas, vinagre, aceite.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Coca de verduras y pulpo frito</div></div><div class="chip-meta">Base crujiente y mar.</div><div class="chip-ing"><b>Ingredientes:</b> pan, harina, moluscos, verduras.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Verduras a la plancha con crema de queso</div></div><div class="chip-meta">Verduras de temporada.</div><div class="chip-ing"><b>Ingredientes:</b> verduras, queso, nata.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Fritura de pescados</div></div><div class="chip-meta">Selección de lonja.</div><div class="chip-ing"><b>Ingredientes:</b> pescado, harina, aceite, sal.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Salmorejo de mango, huevo y jamón</div></div><div class="chip-meta">Versión tropical.</div><div class="chip-ing"><b>Ingredientes:</b> tomate, mango, pan, ajo, aceite de oliva suave, vinagre, sal, queso, jamón serrano.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Presa, boletus y vino tinto</div></div><div class="chip-meta">Intenso y jugoso.</div><div class="chip-ing"><b>Ingredientes:</b> presa, boletus, vino tinto, azúcar.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Salmón ahumado con queso y salsa de cítricos</div></div><div class="chip-meta">Ahumado suave con cítricos.</div><div class="chip-ing"><b>Ingredientes:</b> salmón, queso, cítricos.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Pulpito frito con parmesano</div></div><div class="chip-meta">Crujiente y sabroso.</div><div class="chip-ing"><b>Ingredientes:</b> molusco, queso, harina, aceite de oliva.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Brandada de bacalao crujiente</div></div><div class="chip-meta">Clásico con textura.</div><div class="chip-ing"><b>Ingredientes:</b> pasta filo, bacalao, leche, A.O.V.E., ajo, huevo.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Buñuelos de queso</div></div><div class="chip-meta">Bocado ligero y lácteo.</div><div class="chip-ing"><b>Ingredientes:</b> queso, huevo, harina, pan, aceite de oliva.</div><div class="chip-alerg"></div></div>
+      <div class="chip-card"><div class="chip-top"><div class="chip-title">Ensalada de burrata, tomate, aguacate y aceitunas</div></div><div class="chip-meta">Fresco y cremoso.</div><div class="chip-ing"><b>Ingredientes:</b> burrata, tomate, aguacate, aceitunas, A.O.V.E., vinagre.</div><div class="chip-alerg"></div></div>
+    </div>
+  </details>
+
+  <!-- Entrantes especiales -->
+  <details class="especiales">
+    <summary>
+      <span class="title">Entrantes especiales</span> 
+      <span class="tag" style="margin-left:8px;font-size:.78rem;background:#fff3d6;border:1px solid #f5d7a1;border-radius:999px;padding:2px 8px;color:#8c5a00">sustituyen a estándar</span>
+    </summary>
+    <div class="grid" id="grid-especiales">
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Ensalada de langostinos, mango y aguacate</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> lechugas, mango, aguacate, vinagre, A.O.V.E.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Almejas a la marinera</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1,75 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> almejas, ajos, guindilla, vino, perejil.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Ensalada de perdiz en escabeche</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1,5 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> perdiz, verduras, vinagre, A.O.V.E., lechugas, aceite, champiñón.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Ibéricos con queso manchego</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1,75 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> queso.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Tataki de salmón y langostinos</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> salmón, langostino, vinagre, soja, sésamo, azúcar, cebolleta, huevas de trucha.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Corte de foie con ensalada</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1,75 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> lechugas, foie gras, aceite, vinagre, P.X.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Espárrago a la plancha, langostino, jamón y salsa trufada</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1,5 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> espárragos, langostinos, jamón, trufa, apio.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Boletus con mollejitas de cordero</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1,5 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> boletus, mollejas de cordero, aceite de oliva, sal.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Salteado de chipirón o pulpo, setas, espárragos y patata cinta con huevo frito</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> chipirón, pulpo, setas, espárragos, patata, huevo, aceite de oliva.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Milhojas de foie con queso de cabra y compota de manzana</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1,5 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> foie, queso, manzana, azúcar.</div>
+        <div class="chip-alerg"></div>
+      </div>
+      <div class="chip-card">
+        <div class="chip-top">
+          <div>
+            <div class="chip-title">Gambón con verduras</div>
+            <div class="suppl-sub">Suplemento por persona</div>
+          </div>
+          <div class="suppl-badge"><span style="color: red; font-weight: 800">+1,5 €</span></div>
+        </div>
+        <div class="chip-ing"><b>Ingredientes:</b> gambón, verduras, aceite de oliva.</div>
+        <div class="chip-alerg"></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- FORMULARIO -->
+  <div class="card">
+    <form id="formEvento">
+      <div class="grid-form">
+        <div class="row"><label>Nombre</label><input type="text" id="nombre" name="nombre" required /></div>
+        <div class="row"><label>Teléfono</label><input type="tel" id="telefono" name="telefono" required /></div>
+        <div class="row"><label>Email</label><input type="email" id="email" name="email" required /></div>
+        <div class="row"><label>Evento</label><input type="text" id="evento" name="evento" placeholder="Boda, bautizo, empresa..." required /></div>
+        <div class="row"><label>Fecha</label><input type="date" id="fecha" name="fecha" required /></div>
+        <div class="row"><label>Comensales</label><input type="number" id="comensales" name="comensales" min="1" value="20" required /></div>
+        <div class="row"><label>Menú</label><select id="menu" name="menu" required><option value="">Seleccionar menú</option><option value="1">Menú Nº1 – 30 €</option><option value="2">Menú Nº2 – 34 €</option><option value="3">Menú Nº3 – 38 €</option><option value="4">Menú Nº4 – 42 €</option><option value="5">Menú Nº5 – 46 €</option><option value="6">Menú Nº6 – 44 €</option><option value="7">Menú Nº7 – 50 €</option><option value="8">Menú Nº8 – 60 €</option></select></div>
+        <div class="row"><label>Hora</label><input type="time" id="hora" name="hora" required /></div>
+        <div class="row"><label>Hotel</label><select id="hotel" name="hotel" required><option value="Cumbria">Hotel Cumbria</option><option value="Guadiana">Hotel Guadiana</option></select></div>
+      </div>
+
+      <!-- Entrantes (máximo 4) -->
+      <div id="entrantesBox" style="display:none; margin-top:14px; border:1px dashed #cfe3f5; border-radius:12px; padding:12px; background:#f9fcff">
+        <h4>Selecciona 4 tipos de entrantes (para compartir)</h4>
+        <div class="ent-grid" id="entGrid"></div>
+        <div class="sel-counter">Seleccionados: <span id="entCount">0</span> / 4</div>
+      </div>
+
+      <!-- Distribución de platos principales -->
+      <div id="distBox" style="display:none; margin-top:14px; border:1px dashed #e6e6e6; border-radius:12px; padding:12px; background:#fff">
+        <h4>Distribución de platos principales</h4>
+        <div class="dist-grid" id="distGrid"></div>
+        <div class="dist-tools">
+          <button type="button" class="btn alt" id="btnAutoDist">Auto: 50/50</button>
+          <button type="button" class="btn alt" id="btnResetDist">Restablecer</button>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button type="button" class="btn" id="btnPreview">Previsualizar</button>
+        <button type="button" class="btn alt" id="btnDownloadPDF">Descargar PDF</button>
+        <button type="submit" class="btn">Enviar solicitud</button>
+      </div>
+
+      <div class="preview" id="preview" style="display:none">
+        <h4>Resumen del evento</h4>
+        <ul id="previewList"></ul>
+        <div class="total-box" id="totalBox"></div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Fecha actual
+  document.getElementById('fechaHoy').textContent = new Date().toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  // Mapa alérgenos
+  const __ALERGENOS__ = {
+    1:'Pescado',2:'Frutos secos',3:'Lácteos',4:'Moluscos',5:'Cereales con gluten',
+    6:'Crustáceos',7:'Huevo',8:'Cacahuetes',9:'Soja',10:'Apio',11:'Mostaza',
+    12:'Sésamo',13:'Altramuces',14:'Sulfitos'
+  };
+
+  // Procesar alérgenos en menús
+  document.querySelectorAll('.plato p').forEach(p => {
+    const text = p.textContent;
+    const match = text.match(/\(([\d,\s]+)\)/);
+    if (match) {
+      const nums = match[1].split(',').map(n => parseInt(n.trim())).filter(n => __ALERGENOS__[n]);
+      p.textContent = text.replace(/\s*\(.*?\)/, '');
+      const row = p.parentNode.querySelector('.alerg-row');
+      nums.forEach(n => {
+        const pill = document.createElement('span');
+        pill.className = 'pill';
+        pill.textContent = n + ' ' + __ALERGENOS__[n];
+        row.appendChild(pill);
+      });
+    }
+  });
+
+  // Precios por menú
+  const precios = {
+    '1': 30, '2': 34, '3': 38, '4': 42, '5': 46,
+    '6': 44, '7': 50, '8': 60
+  };
+
+  // Menús con elección de plato principal
+  const menuConDist = ['1','2','3','4','5','6'];
+  const distOptions = {
+    '1': ['Dorada, tomate y piquillo', 'Brocheta de presa ibérica'],
+    '2': ['Tacos de atún, tallarines de calamar', 'Buey a la parrilla'],
+    '3': ['Bacalao, piñones, pasas', 'Cochinillo tostón'],
+    '4': ['Rape negro, gamba roja', 'Solomillo de ternera'],
+    '5': ['Suprema de merluza', 'Paletilla de lechal'],
+    '6': ['Tacos de atún, tallarines de calamar', 'Buey a la parrilla']
+  };
+
+  // Entrantes especiales
+  const entrantesEspeciales = {
+    'Ensalada de langostinos, mango y aguacate': 1.00,
+    'Almejas a la marinera': 1.75,
+    'Ensalada de perdiz en escabeche': 1.50,
+    'Ibéricos con queso manchego': 1.75,
+    'Tataki de salmón y langostinos': 1.00,
+    'Corte de foie con ensalada': 1.75,
+    'Espárrago a la plancha, langostino, jamón y salsa trufada': 1.50,
+    'Boletus con mollejitas de cordero': 1.50,
+    'Salteado de chipirón o pulpo, setas, espárragos y patata cinta con huevo frito': 1.00,
+    'Milhojas de foie con queso de cabra y compota de manzana': 1.50,
+    'Gambón con verduras': 1.50
+  };
+
+  // Todos los entrantes (estándar + especiales)
+  const todosEntrantes = [
+    'Croqueta de jamón con tomate cassé',
+    'Setas a la sartén con patatas y cremoso de yema',
+    'Huevo a 62º con parmentier y pulpitos fritos',
+    'Escalope de foie asado, cebolla caramelizada y pan de especias',
+    'Ensalada de jamón de pato, dulce de higos y granada',
+    'Coca de verduras y pulpo frito',
+    'Verduras a la plancha con crema de queso',
+    'Fritura de pescados',
+    'Salmorejo de mango, huevo y jamón',
+    'Presa, boletus y vino tinto',
+    'Salmón ahumado con queso y salsa de cítricos',
+    'Pulpito frito con parmesano',
+    'Brandada de bacalao crujiente',
+    'Buñuelos de queso',
+    'Ensalada de burrata, tomate, aguacate y aceitunas',
+    ...Object.keys(entrantesEspeciales)
+  ];
+
+  // Elementos
+  const form = document.getElementById('formEvento');
+  const menuSelect = document.getElementById('menu');
+  const comensalesInput = document.getElementById('comensales');
+  const entrantesBox = document.getElementById('entrantesBox');
+  const distBox = document.getElementById('distBox');
+  const entGrid = document.getElementById('entGrid');
+  const entCount = document.getElementById('entCount');
+  const distGrid = document.getElementById('distGrid');
+  const btnPreview = document.getElementById('btnPreview');
+  const btnAutoDist = document.getElementById('btnAutoDist');
+  const btnResetDist = document.getElementById('btnResetDist');
+  const preview = document.getElementById('preview');
+  const previewList = document.getElementById('previewList');
+  const totalBox = document.getElementById('totalBox');
+  const btnDownloadPDF = document.getElementById('btnDownloadPDF');
+
+  // Actualizar formulario
+  menuSelect.addEventListener('change', actualizarFormulario);
+  comensalesInput.addEventListener('change', actualizarFormulario);
+
+  function actualizarFormulario() {
+    const menu = menuSelect.value;
+    const comensales = parseInt(comensalesInput.value) || 0;
+
+    // Reset
+    entrantesBox.style.display = 'none';
+    distBox.style.display = 'none';
+
+    if (!menu) return;
+
+    // Menús 1–5: eligen 4 entrantes y distribución
+    if (menu >= '1' && menu <= '5') {
+      entrantesBox.style.display = 'block';
+      mostrarEntrantes();
+      distBox.style.display = 'block';
+      mostrarDistribucion(menu);
+    }
+    // Menú 6: no elige entrantes, pero sí distribución (tercer plato)
+    else if (menu === '6') {
+      distBox.style.display = 'block';
+      mostrarDistribucion(menu);
+    }
+    // Menús 7 y 8: cerrados, nada se elige
+    else if (['7', '8'].includes(menu)) {
+      // Nada
+    }
+  }
+
+  function mostrarEntrantes() {
+    entGrid.innerHTML = '';
+    todosEntrantes.forEach(nombre => {
+      const div = document.createElement('div');
+      div.className = 'ent-item';
+      const suppl = entrantesEspeciales[nombre] || 0;
+      div.innerHTML = `
+        <label style="flex:1">
+          <input type="checkbox" name="entrante" value="${nombre}">
+          ${nombre} ${suppl ? `<span class="tag">+${suppl.toFixed(2)}€</span>` : ''}
+        </label>
+      `;
+      entGrid.appendChild(div);
+    });
+
+    const checkboxes = entGrid.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const selected = entGrid.querySelectorAll('input:checked').length;
+        if (selected > 4) {
+          cb.checked = false;
+          alert('Solo puedes seleccionar 4 tipos de entrantes.');
+        }
+        entCount.textContent = selected;
+      });
+    });
+  }
+
+  function mostrarDistribucion(menu) {
+    distGrid.innerHTML = '';
+    const opciones = distOptions[menu];
+    const comensales = parseInt(comensalesInput.value) || 0;
+    opciones.forEach(op => {
+      const div = document.createElement('div');
+      div.className = 'dist-item';
+      div.innerHTML = `<b>${op}</b><input type="number" name="dist" data-op="${op}" value="0" min="0" max="${comensales}" />`;
+      distGrid.appendChild(div);
+    });
+    btnAutoDist.onclick = () => {
+      const inputs = distGrid.querySelectorAll('input');
+      const half = Math.floor(comensales / 2);
+      inputs[0].value = half;
+      inputs[1].value = comensales - half;
+    };
+    btnResetDist.onclick = () => {
+      distGrid.querySelectorAll('input').forEach(i => i.value = 0);
+    };
+  }
+
+  // Previsualizar
+  btnPreview.addEventListener('click', () => {
+    const formData = new FormData(form);
+    const nombre = formData.get('nombre');
+    const telefono = formData.get('telefono');
+    const email = formData.get('email');
+    const evento = formData.get('evento');
+    const fecha = formData.get('fecha');
+    const comensales = parseInt(formData.get('comensales'));
+    const menu = formData.get('menu');
+    const hora = formData.get('hora');
+    const hotel = formData.get('hotel');
+
+    if (!menu) {
+      alert('Por favor, selecciona un menú.');
+      return;
+    }
+    if (comensales < 1) {
+      alert('El número de comensales debe ser al menos 1.');
+      return;
+    }
+
+    // Entrantes: exactamente 4 tipos
+    const entrantesSel = [];
+    let suplTotalEntrantes = 0;
+    document.querySelectorAll('#entGrid input:checked').forEach(cb => {
+      const nombre = cb.value;
+      const supl = entrantesEspeciales[nombre] || 0;
+      entrantesSel.push({ nombre, supl });
+      suplTotalEntrantes += supl * comensales;
+    });
+
+    if (menu >= '1' && menu <= '5' && entrantesSel.length !== 4) {
+      alert('Debes seleccionar exactamente 4 tipos de entrantes.');
+      return;
+    }
+
+    // Distribución
+    const distribucion = [];
+    if (menuConDist.includes(menu)) {
+      const inputs = distGrid.querySelectorAll('input[name="dist"]');
+      const op1 = inputs[0]?.dataset.op || '';
+      const op2 = inputs[1]?.dataset.op || '';
+      const v1 = parseInt(inputs[0]?.value) || 0;
+      const v2 = parseInt(inputs[1]?.value) || 0;
+
+      if (v1 + v2 !== comensales) {
+        alert(`La distribución debe sumar ${comensales} comensales.`);
+        return;
+      }
+      if (v1 > 0) distribucion.push(`${v1} de ${op1}`);
+      if (v2 > 0) distribucion.push(`${v2} de ${op2}`);
+    }
+
+    // Cálculo total
+    const precioPorPersona = precios[menu];
+    const totalSinSupl = precioPorPersona * comensales;
+    const total = totalSinSupl + suplTotalEntrantes;
+
+    // Mostrar en previsualización
+    preview.style.display = 'block';
+
+    // === CONSTRUIR RESUMEN COMPLETO CON TODOS LOS PLATOS ===
+    let menuHTML = '';
+
+    // Función para obtener alérgenos de un plato
+    function getAlergenos(texto) {
+      const key = texto.substring(0, 50);
+      const nums = [];
+      document.querySelectorAll('.plato p').forEach(p => {
+        const pText = p.textContent.trim();
+        if (pText.includes(texto)) {
+          const match = pText.match(/\(([\d,\s]+)\)/);
+          if (match) {
+            nums.push(...match[1].split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n) && __ALERGENOS__[n]));
+          }
+        }
+      });
+      return nums.length > 0 ? ` (${nums.map(n => `${n} ${__ALERGENOS__[n]}`).join(', ')})` : '';
+    }
+
+    // Menús 1–5
+    if (menu >= '1' && menu <= '5') {
+      menuHTML += `<li><b>Entrantes:</b></li>`;
+      entrantesSel.forEach(item => {
+        const alergenos = getAlergenos(item.nombre);
+        menuHTML += `<li>${item.nombre}${alergenos}${item.supl > 0 ? ` <span style="color: red; font-weight: 800">+${item.supl.toFixed(2)} €</span>` : ''}</li>`;
+      });
+      if (suplTotalEntrantes > 0) {
+        menuHTML += `<li><b>Suplementos por entrantes:</b> <span style="color: red; font-weight: 800">+${suplTotalEntrantes.toFixed(2)} €</span></li>`;
+      }
+    }
+    // Menú 6
+    else if (menu === '6') {
+      menuHTML += `<li><b>Primer plato:</b> Ensalada de langostinos, mango y aguacate${getAlergenos('Ensalada de langostinos, mango y aguacate')}</li>`;
+      menuHTML += `<li><b>Segundo plato:</b> Jamón ibérico, queso manchego, dos langostinos y dos gambas, hojaldre de salmón, tortita de camarones, croquetas de gorgonzola y tosta de la casa${getAlergenos('Jamón ibérico, queso manchego')}</li>`;
+      menuHTML += `<li><b>Tercer plato (a elegir):</b></li>`;
+      distribucion.forEach(d => {
+        menuHTML += `<li>${d}</li>`;
+      });
+      menuHTML += `<li><b>Postre:</b> Brownie con helado${getAlergenos('Brownie con helado')}</li>`;
+    }
+    // Menús 7 y 8
+    else if (menu === '7') {
+      menuHTML += `<li><b>Entrantes:</b> Buñuelos de queso${getAlergenos('Buñuelos de queso')}, Tataki de salmón y langostinos${getAlergenos('Tataki de salmón y langostinos')}</li>`;
+      menuHTML += `<li><b>Primer plato:</b> Concha de marisco al gratén${getAlergenos('Concha de marisco al gratén')}</li>`;
+      menuHTML += `<li><b>Segundo plato:</b> ½ Suprema de merluza con tallarines de calamar y gamba alistada${getAlergenos('Suprema de merluza')}</li>`;
+      menuHTML += `<li><b>Tercer plato:</b> ½ Solomillo de ternera, escalope de foie, manzana, vainilla al Oporto${getAlergenos('Solomillo de ternera')}</li>`;
+      menuHTML += `<li><b>Postre:</b> Tiramisú${getAlergenos('Tiramisú')}</li>`;
+    }
+    else if (menu === '8') {
+      menuHTML += `<li><b>Entrantes:</b> Surtido de ibéricos con pan y tomate${getAlergenos('Surtido de ibéricos')}, Corte de foie con ensalada${getAlergenos('Corte de foie')}</li>`;
+      menuHTML += `<li><b>Primer plato:</b> Ensalada con ½ langosta, frutas tropicales y vinagre de Fórum Chardonnay${getAlergenos('Ensalada con ½ langosta')}</li>`;
+      menuHTML += `<li><b>Segundo plato:</b> ½ Rape negro, gamba roja, jugo de crustáceos y crujiente de tinta${getAlergenos('Rape negro, gamba roja')}</li>`;
+      menuHTML += `<li><b>Tercer plato:</b> ½ Cochinillo asado, puré de membrillo y patata trufada${getAlergenos('Cochinillo asado')}</li>`;
+      menuHTML += `<li><b>Postre:</b> Bomba de chocolate${getAlergenos('Bomba de chocolate')}</li>`;
+    }
+
+    previewList.innerHTML = `
+      <li><b>Nombre:</b> ${nombre}</li>
+      <li><b>Teléfono:</b> ${telefono}</li>
+      <li><b>Email:</b> ${email}</li>
+      <li><b>Evento:</b> ${evento}</li>
+      <li><b>Fecha:</b> ${new Date(fecha).toLocaleDateString('es-ES')} a las ${hora}</li>
+      <li><b>Hotel:</b> ${hotel}</li>
+      <li><b>Menú:</b> Menú Nº${menu} (${precioPorPersona}€/pax)</li>
+      <li><b>Comensales:</b> ${comensales}</li>
+      ${menuHTML}
+    `;
+    totalBox.innerHTML = `Presupuesto final: <strong>${total.toFixed(2)} €</strong>`;
+  });
+
+// Descargar PDF (versión corregida: jsPDF sí está definido)
+btnDownloadPDF.addEventListener('click', () => {
+  if (preview.style.display === 'none') {
+    alert('Primero haz clic en "Previsualizar".');
+    return;
+  }
+
+  try {
+    // Datos del evento
+    const nombre = document.getElementById('nombre').value;
+    const telefono = document.getElementById('telefono').value;
+    const email = document.getElementById('email').value;
+    const evento = document.getElementById('evento').value;
+    const hotel = document.getElementById('hotel').value;
+    const comensales = document.getElementById('comensales').value;
+    const menuSelect = document.getElementById('menu');
+    const menuLabel = menuSelect.options[menuSelect.selectedIndex].text;
+    const fechaHoy = new Date().toLocaleDateString('es-ES');
+
+    // Generar número de presupuesto
+    const now = new Date();
+    const numPresupuesto = `P-${now.getFullYear()}-${String(now.getTime()).slice(-4)}`;
+
+    // Llenar el contenido del PDF
+    document.getElementById('pdfFecha').textContent = fechaHoy;
+    document.getElementById('pdfNum').textContent = numPresupuesto;
+
+    const pdfDetails = document.getElementById('pdfDetails');
+    pdfDetails.innerHTML = `
+      <h3 style="color:#0a6aa1; border-bottom:2px solid #e6eef5; padding-bottom:6px; font-size:16px;">Datos del Cliente</h3>
+      <p><strong>Nombre:</strong> ${nombre}</p>
+      <p><strong>Teléfono:</strong> ${telefono}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Evento:</strong> ${evento}</p>
+      <p><strong>Hotel:</strong> ${hotel}</p>
+      <p><strong>Comensales:</strong> ${comensales}</p>
+      <p><strong>Menú:</strong> ${menuLabel}</p>
+
+      <h3 style="color:#0a6aa1; border-bottom:2px solid #e6eef5; padding-bottom:6px; margin-top:20px; font-size:16px;">Resumen del Menú</h3>
+      ${previewList.innerHTML.replace(/<li>/g, '• ').replace(/<\/li>/g, '<br>').replace(/<ul>|<\/ul>/g, '')}
+
+      <h3 style="color:#0a6aa1; border-bottom:2px solid #e6eef5; padding-bottom:6px; margin-top:20px; font-size:16px;">Total</h3>
+      <p style="font-size:18px; font-weight:bold; color:#0a6aa1;"><strong>${totalBox.textContent}</strong></p>
+    `;
+
+    // ✅ Acceder correctamente a jsPDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    // Capturar con html2canvas
+    const pdfContent = document.getElementById('pdfContent');
+    
+    html2canvas(pdfContent, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      logging: false
+    }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const width = pdf.internal.pageSize.getWidth();
+      const height = (canvas.height * width) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+      pdf.save(`Presupuesto_${evento.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${numPresupuesto}.pdf`);
+    }).catch(err => {
+      console.error('Error en html2canvas:', err);
+      alert('Error al generar la imagen del PDF. Código: ' + err.message);
+    });
+
+  } catch (error) {
+    console.error('Error al preparar el PDF:', error);
+    alert('Error al preparar el presupuesto. Revisa los datos.');
+  }
+});  // Enviar por email
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (preview.style.display === 'none') {
+      alert('Haz clic en "Previsualizar" antes de enviar.');
+      return;
+    }
+    const nombre = document.getElementById('nombre').value;
+    const telefono = document.getElementById('telefono').value;
+    const email = document.getElementById('email').value;
+    const evento = document.getElementById('evento').value;
+
+    const body = encodeURIComponent(`
+Solicitud de evento:
+
+Nombre: ${nombre}
+Teléfono: ${telefono}
+Email: ${email}
+Evento: ${evento}
+${previewList.innerText}
+
+${totalBox.innerText}
+    `);
+    window.location.href = `mailto:comunicaciones@hotelguadiana.es?subject=Solicitud de evento - ${evento}&body=${body}`;
+  });
+</script>
+<!-- Contenido para PDF (se muestra temporalmente) -->
+<div id="pdfContent" style="position:fixed; left:-9999px; top:-9999px; width:800px; padding:30px; font-family:Arial, sans-serif; background:#fff; color:#1b2633; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+  <div style="text-align:center; margin-bottom:20px;">
+    <h1 style="color:#0a6aa1; margin:10px 0; font-size:24px;">Presupuesto de Evento</h1>
+    <p style="color:#667786; font-size:14px;">Cumbria & Guadiana · <span id="pdfFecha"></span></p>
+    <p style="color:#0a6aa1; font-weight:bold;">Nº Presupuesto: <span id="pdfNum"></span></p>
+  </div>
+
+  <hr style="border:1px solid #e6eef5; margin:20px 0;">
+
+  <div id="pdfDetails" style="margin:20px 0; line-height:1.6; font-size:14px;">
+    <!-- Aquí se inyecta la info -->
+  </div>
+
+  <div style="margin-top:30px; text-align:center; color:#667786; font-size:13px;">
+    <p>Este presupuesto tiene validez 30 días. Para confirmar, contacte con nosotros.</p>
+    <p><strong>Teléfono:</strong> +34 956 123 456 | <strong>Email:</strong> eventos@hotelcumbria.com</p>
+    <p style="margin-top:15px; font-style:italic;">Cumbria & Guadiana · Experiencias únicas en eventos</p>
+  </div>
+</div>
+</body>
+</html>
