@@ -1,0 +1,25 @@
+/* ===== Logo del hotel dentro del menú seleccionado ===== */
+:root{
+  /* color de realce por defecto (se sobreescribe desde JS) */
+  --menu-highlight:#cfe5fb;
+}
+
+.hotel-badge{
+  display:flex;align-items:center;gap:8px;
+  margin-left:8px;padding:4px 10px;
+  background:#fff;border:1px solid #e6edf5;border-radius:999px;
+  box-shadow:0 3px 10px rgba(0,0,0,.04);
+  font-weight:700;color:#0a4f79;
+}
+.hotel-badge img{height:24px;width:auto;display:block}
+
+@media(max-width:520px){
+  .hotel-badge b{display:none} /* en móviles deja solo el icono */
+}
+
+/* realce visual del menú abierto/seleccionado */
+details.highlight{
+  outline:2px solid var(--menu-highlight);
+  border-radius:14px;
+  box-shadow:0 6px 20px rgba(0,0,0,.04);
+}
