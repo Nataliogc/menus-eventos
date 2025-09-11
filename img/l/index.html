@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Cabecera Menús – Live</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root{ --brand:#0a6aa1; --ink:#1b2633; --bg1:#e8f4ff; --bg2:#f8fbff; --bg3:#e8f6ff; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:#fff}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .hero{position:relative;height:320px;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.08);
+      background:linear-gradient(120deg,var(--bg1),var(--bg2) 60%,var(--bg3))}
+    .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.55));
+      display:flex;align-items:center;justify-content:center;text-align:center;padding:16px}
+    .brand{display:flex;flex-direction:column;align-items:center;gap:12px}
+    .brand img{height:90px;max-width:400px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.35))}
+    h1{color:#fff;margin:4px 0 0;font-size:2.6rem;letter-spacing:.5px}
+    p.sub{margin:.25rem 0 0;color:#ecf4f9;font-weight:600}
+    /* Pequeño selector opcional (se puede ocultar en el iframe con &controls=0) */
+    .controls{margin:12px auto 0;display:flex;gap:10px;justify-content:center;align-items:center}
+    .controls input{display:none}
+    .controls .pill{cursor:pointer;border:1px solid #cfe3f5;background:#f7fbff;padding:6px 12px;border-radius:999px;font-weight:700;color:#0a4f79}
+    .controls input:checked + .pill{background:var(--brand);color:#fff;border-color:var(--brand)}
+    @media(min-width:680px){.hero{height:360px}.brand img{height:100px}h1{font-size:2.9rem}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="ov">
+        <div class="brand">
+          <img id="hotelLogo" src="" alt="Logo Hotel">
+          <h1>Menús Eventos</h1>
+          <p class="sub" id="hotelName">Hotel</p>
+        </div>
+      </div>
+    </div>
+    <div class="controls" id="controls">
+      <label><input type="radio" name="h" value="Cumbria"><span class="pill">Cumbria</span></label>
+      <label><input type="radio" name="h" value="Guadiana"><span class="pill">Guadiana</span></label>
+    </div>
+  </div>
+
+  <script>
+    // Config: logos y colores por hotel (rutas fijas de tu Pages)
+    const HOTELS = {
+      Cumbria:  { name: 'Hotel Cumbria',  logo: 'https://nataliogc.github.io/menus-eventos/img/cumbria-logo.jpg',  brand:'#0a6aa1' },
+      Guadiana: { name: 'Hotel Guadiana', logo: 'https://nataliogc.github.io/menus-eventos/img/guadiana-logo.jpg', brand:'#2f7f47' }
+    };
+
+    // Lee parámetros ?hotel=Cumbria&controls=0
+    const params = new URLSearchParams(location.search);
+    const initial = (params.get('hotel')||'Cumbria').trim();
+    const showControls = params.get('controls') !== '0';
+
+    // Oculta controles si se pide
+    if(!showControls){
+      document.getElementById('controls').style.display = 'none';
+    }
+
+    function setHotel(key){
+      const h = HOTELS[key] || HOTELS.Cumbria;
+      document.documentElement.style.setProperty('--brand', h.brand);
+      document.getElementById('hotelLogo').src = h.logo;
+      document.getElementById('hotelLogo').alt = 'Logo ' + h.name;
+      document.getElementById('hotelName').textContent = h.name;
+      // Marcar el radio si está visible
+      document.querySelectorAll('input[name="h"]').forEach(r=>{
+        if(r.value===key) r.checked = true;
+      });
+    }
+
+    // Eventos
+    document.querySelectorAll('input[name="h"]').forEach(r=>{
+      r.addEventListener('change', e=> setHotel(e.target.value));
+    });
+
+    // Inicializa
+    setHotel(initial);
+  </script>
+</body>
+</html>
