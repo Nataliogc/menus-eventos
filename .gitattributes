@@ -1,0 +1,18 @@
+* text=auto eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.md   text eol=lf
+*.svg  text eol=lf
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+*.sh   text eol=lf
+*.ico  -text
+*.png  -text
+*.jpg  -text
+*.jpeg -text
+*.gif  -text
+*.pdf  -text
