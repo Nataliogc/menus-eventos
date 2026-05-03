@@ -1,284 +1,23 @@
 
-// Configuration & Data
+// Configuration & Data is now loaded from js/data.js
 
-
-// ... (CATALOG_ITEMS, MENUS_DATA, state, init, etc. remain unchanged) ...
-
-function generatePDF() {
-    if (!state.selectedMenu) { alert("Por favor, selecciona un menú primero."); return; }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const hotel = HOTELS[state.selectedHotel];
-    const data = getSelectedForPdf();
-
-    // -- STYLING --
-    const primaryColor = [15, 23, 42]; // Slate 900
-    const accentColor = [245, 158, 11]; // Amber 500
-    const dimColor = [100, 116, 139]; // Slate 500
-
-    // -- HEADER --
-    // Logo (Left)
-    if (hotel.logoBase64) {
-        try {
-            // Larger logo, preserving aspect ratio roughly by fitting in a box
-            doc.addImage(hotel.logoBase64, 'PNG', 15, 15, 50, 25, undefined, 'FAST');
-        } catch (e) { console.warn("PDF Logo Error", e); }
-    }
-
-    // Hotel Info (Right)
-    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(...primaryColor);
-    doc.text(hotel.name, 195, 20, null, null, "right");
-
-    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(...dimColor);
-    doc.text(hotel.address, 195, 26, null, null, "right");
-    doc.text(`Tel: ${hotel.tel}`, 195, 31, null, null, "right");
-    doc.text(hotel.web, 195, 36, null, null, "right");
-
-    // Divider
-    doc.setDrawColor(226, 232, 240); // Slate 200
-    doc.setLineWidth(0.5);
-    doc.line(15, 45, 195, 45);
-
-    // -- DOCUMENT INFO --
-    doc.setFont("helvetica", "bold"); doc.setFontSize(24); doc.setTextColor(...primaryColor);
-    doc.text("PRESUPUESTO", 15, 60);
-
-    doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(...dimColor);
-    doc.text(`Ref: ${state.budgetRef}`, 15, 66);
-
-    // Client & Event Data Box
-    const clientName = document.getElementById('clientName')?.value || 'Cliente';
-    doc.setFillColor(248, 250, 252); // Slate 50
-    doc.roundedRect(120, 50, 75, 28, 2, 2, 'F');
-
-    doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...primaryColor);
-    doc.text("Detalles del Evento:", 125, 58);
-
-    doc.setFont("helvetica", "normal"); doc.setTextColor(0, 0, 0);
-    doc.text(`Cliente: ${clientName}`, 125, 64);
-    doc.text(`Fecha: ${state.date}`, 125, 69);
-    doc.text(`Comensales: ${state.guestCount} pax`, 125, 74);
-
-    // -- MENU SELECTION --
-    let y = 90;
-
-    // Menu Title
-    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(...primaryColor);
-    doc.text(`Menú Seleccionado: ${state.selectedMenu.name}`, 15, y);
-    y += 10;
-
-    // Menu Content
-    doc.setFontSize(10); doc.setTextColor(50, 50, 50);
-
-    const pageHeight = doc.internal.pageSize.height;
-
-    Object.keys(data).forEach(title => {
-        // Page break check
-        if (y > pageHeight - 40) { doc.addPage(); y = 20; }
-
-        const items = data[title];
-        const cleanTitle = title.split('(')[0].trim();
-
-        doc.setFont("helvetica", "bold"); doc.setTextColor(...primaryColor);
-        doc.text(cleanTitle.toUpperCase(), 15, y);
-        y += 6;
-
-        doc.setFont("helvetica", "normal"); doc.setTextColor(50, 50, 50);
-        items.forEach(item => {
-            // Wrap text if too long
-            const splitText = doc.splitTextToSize(`• ${item}`, 170);
-            doc.text(splitText, 18, y);
-            y += (5 * splitText.length); // Adjust for multiline
-        });
-        y += 6; // Spacing between sections
-    });
-
-    // -- TOTALS --
-    if (y > pageHeight - 50) { doc.addPage(); y = 30; }
-
-    y += 10;
-    doc.setDrawColor(226, 232, 240);
-    doc.line(15, y, 195, y);
-    y += 10;
-
-    const totalText = document.getElementById('totalPrice')?.textContent || '0.00€';
-
-    // Total Box
-    doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...primaryColor);
-    doc.text("Total Estimado:", 140, y + 5, null, null, "right");
-
-    doc.setFontSize(18); doc.setTextColor(...accentColor);
-    doc.text(totalText, 195, y + 6, null, null, "right");
-
-    doc.setFontSize(8); doc.setFont("helvetica", "italic"); doc.setTextColor(...dimColor);
-    doc.text("I.V.A. incluido - Presupuesto válido por 15 días.", 195, y + 14, null, null, "right");
-
-    // -- FOOTER --
-    doc.setFontSize(8); doc.setTextColor(150, 150, 150);
-    doc.text("Documento generado automáticamente por Menús Eventos App", 105, pageHeight - 10, null, null, "center");
-
-    doc.save(`Presupuesto_${state.budgetRef}.pdf`);
+/**
+ * Utility to find allergen numbers for a dish and format as superscript (1/2/3)
+ */
+function getAllergensSup(dishName) {
+    if (!dishName) return '';
+    const catalogItem = CATALOG_ITEMS.find(i => i.t === dishName);
+    if (!catalogItem || !catalogItem.al) return '';
+    
+    const matches = catalogItem.al.match(/\d+/g);
+    if (!matches) return '';
+    
+    return `<sup>(${matches.join('/')})</sup>`;
 }
-
-
-// Full Catalog Recovered
-const CATALOG_ITEMS = [
-    { t: 'Croqueta de jamón con tomate cassé', desc: 'Crujiente por fuera, cremosa por dentro.', ing: 'leche, jamón, harina, huevo', al: '3 Lácteos; 5 Cereales con gluten; 7 Huevo', sup: 0 },
-    { t: 'Setas a la sartén con patatas y cremoso de yema', desc: 'Salteado suave con toque de yema.', ing: 'setas, patatas, huevo', al: '7 Huevo', sup: 0 },
-    { t: 'Huevo a 62º con parmentier y pulpitos fritos', desc: 'Baja temperatura y contraste crujiente.', ing: 'huevo, leche, moluscos', al: '3 Lácteos; 4 Moluscos; 7 Huevo', sup: 0 },
-    { t: 'Escalope de foie asado, cebolla caramelizada y pan de especias', desc: 'Dulce‑salado con especias.', ing: 'foie, cebolla, azúcar, harina, mantequilla', al: '3 Lácteos; 5 Cereales con gluten', sup: 0 },
-    { t: 'Ensalada de jamón de pato, dulce de higos y granada', desc: 'Fresco y con contraste ácido.', ing: 'pato, higo, granada, lechugas, vinagre, aceite', al: '', sup: 0 },
-    { t: 'Coca de verduras y pulpo frito', desc: 'Base crujiente y mar.', ing: 'pan, harina, moluscos, verduras', al: '4 Moluscos; 5 Cereales con gluten', sup: 0 },
-    { t: 'Verduras a la plancha con crema de queso', desc: 'Verduras de temporada.', ing: 'verduras, queso, nata', al: '1 Pescado; 5 Cereales con gluten', sup: 0 },
-    { t: 'Fritura de pescados', desc: 'Selección de lonja.', ing: 'pescado, harina, aceite, sal', al: '1 Pescado; 5 Cereales con gluten', sup: 0 },
-    { t: 'Salmorejo de mango, huevo y jamón', desc: 'Versión tropical.', ing: 'tomate, mango, pan, ajo, aceite de oliva suave, vinagre, sal, queso, jamón serrano', al: '5 Cereales con gluten; 14 Sulfitos', sup: 0 },
-    { t: 'Presa, boletus y vino tinto', desc: 'Intenso y jugoso.', ing: 'presa, boletus, vino tinto, azúcar', al: '14 Sulfitos', sup: 0 },
-    { t: 'Salmón ahumado con queso y salsa de cítricos', desc: 'Ahumado suave con cítricos.', ing: 'salmón, queso, cítricos', al: '1 Pescado; 3 Lácteos', sup: 0 },
-    { t: 'Pulpito frito con parmesano', desc: 'Crujiente y sabroso.', ing: 'molusco, queso, harina, aceite de oliva', al: '3 Lácteos; 4 Moluscos; 5 Cereales con gluten', sup: 0 },
-    { t: 'Brandada de bacalao crujiente', desc: 'Clásico con textura.', ing: 'pasta filo, bacalao, leche, A.O.V.E., ajo, huevo', al: '1 Pescado; 3 Lácteos; 5 Cereales con gluten; 7 Huevo', sup: 0 },
-    { t: 'Buñuelos de queso', desc: 'Bocado ligero y lácteo.', ing: 'queso, huevo, harina, pan, aceite de oliva', al: '3 Lácteos; 5 Cereales con gluten; 7 Huevo', sup: 0 },
-    { t: 'Ensalada de burrata, tomate, aguacate y aceitunas', desc: 'Fresco y cremoso.', ing: 'burrata, tomate, aguacate, aceitunas, A.O.V.E., vinagre', al: '3 Lácteos; 14 Sulfitos', sup: 0 },
-    // Specials
-    { t: 'Ensalada de langostinos, mango y aguacate', sup: 1.00, desc: 'Sustituye a estándar (+1.00€).', ing: 'lechugas, mango, aguacate, vinagre, A.O.V.E.', al: '14 Sulfitos' },
-    { t: 'Almejas a la marinera', sup: 1.75, desc: 'Sustituye a estándar (+1.75€).', ing: 'almejas, ajos, guindilla, vino, perejil', al: '4 Moluscos; 14 Sulfitos' },
-    { t: 'Ensalada de perdiz en escabeche', sup: 1.50, desc: 'Sustituye a estándar (+1.50€).', ing: 'perdiz, verduras, vinagre, A.O.V.E., lechugas, aceite, champiñón', al: '14 Sulfitos' },
-    { t: 'Ibéricos con queso manchego', sup: 1.75, desc: 'Sustituye a estándar (+1.75€).', ing: 'queso', al: '5 Cereales con gluten' },
-    { t: 'Tataki de salmón y langostinos', sup: 1.00, desc: 'Sustituye a estándar (+1.00€).', ing: 'salmón, langostino, vinagre, soja, sésamo, azúcar, cebolleta, huevas de trucha', al: '1 Pescado; 6 Crustáceos; 9 Soja; 12 Sésamo; 14 Sulfitos' },
-    { t: 'Corte de foie con ensalada', sup: 1.75, desc: 'Sustituye a estándar (+1.75€).', ing: 'lechugas, foie gras, aceite, vinagre, P.X.', al: '14 Sulfitos' },
-    { t: 'Espárrago a la plancha, langostino, jamón y salsa trufada', sup: 1.50, desc: 'Sustituye a estándar (+1.50€).', ing: 'espárragos, langostinos, jamón, trufa, apio', al: '6 Crustáceos; 10 Apio' },
-    { t: 'Boletus con mollejitas de cordero', sup: 1.50, desc: 'Sustituye a estándar (+1.50€).', ing: 'boletus, mollejas de cordero, aceite de oliva, sal', al: '' },
-    { t: 'Salteado de chipirón o pulpo, setas, espárragos y patata cinta con huevo frito', sup: 1.00, desc: 'Sustituye a estándar (+1.00€).', ing: 'chipirón, pulpo, setas, espárragos, patata, huevo, aceite de oliva', al: '4 Moluscos; 7 Huevo' },
-    { t: 'Milhojas de foie con queso de cabra y compota de manzana', sup: 1.50, desc: 'Sustituye a estándar (+1.50€).', ing: 'foie, queso, manzana, azúcar', al: '3 Lácteos' },
-    { t: 'Gambón con verduras', sup: 1.50, desc: 'Sustituye a estándar (+1.50€).', ing: 'gambón, verduras, aceite de oliva', al: '6 Crustáceos' }
-];
-
-const MENUS_DATA = [
-    {
-        id: 1,
-        name: "Menú 1",
-        price: 65.00,
-        desc: "Indicado para bodas y celebraciones formales con equilibrio mar por tierra.",
-        sections: [
-            { title: "Entrantes (Elige 4)", type: "choose_many", limit: 4, items: CATALOG_ITEMS },
-            { title: "Primer Plato", type: "fixed", items: ["Ensalada con ½ langosta, frutas tropicales y vinagre de Fórum Chardonnay"] },
-            {
-                title: "Segundo Plato (Reparto)",
-                type: "choose_split",
-                items: ["½ Rape negro, gamba roja, jugo de crustáceos y crujiente de tinta", "½ Cochinillo asado, puré de membrillo y patata trufada"]
-            },
-            { title: "Postre", type: "fixed", items: ["Bomba de chocolate"] }
-        ]
-    },
-    {
-        id: 2,
-        name: "Menú 2",
-        price: 60.00,
-        desc: "Recomendado para grupos que valoran el arroz y el producto de mar.",
-        sections: [
-            { title: "Entrantes (Elige 4)", type: "choose_many", limit: 4, items: CATALOG_ITEMS },
-            { title: "Primer Plato", type: "fixed", items: ["Arroz caldoso con bogavante"] },
-            {
-                title: "Segundo Plato (Reparto)",
-                type: "choose_split",
-                items: ["Merluza a la gallega", "Entrecot de ternera a la brasa"]
-            },
-            { title: "Postre", type: "fixed", items: ["Tarta de queso con frutos rojos"] }
-        ]
-    },
-    {
-        id: 3,
-        name: "Menú 3 (Personalizable)",
-        price: 58.00,
-        desc: "Ideal para celebraciones informales. 100% Configurable.",
-        sections: [
-            { title: "Entrantes (Elige 4)", type: "choose_many", limit: 4, items: CATALOG_ITEMS },
-            { title: "Primer Plato", type: "fixed", items: ["Crema de calabaza con virutas de ibérico"] },
-            {
-                title: "Segundo Plato (Reparto)",
-                type: "choose_split",
-                items: ["Bacalao al pil-pil", "Magret de pato con salsa de frutos rojos"]
-            },
-            { title: "Postre", type: "fixed", items: ["Helado artesano de turrón"] }
-        ]
-    },
-    {
-        id: 4,
-        name: "Menú 4",
-        price: 62.00,
-        desc: "Pensado para eventos de empresa o reuniones formales.",
-        sections: [
-            { title: "Entrantes (Elige 4)", type: "choose_many", limit: 4, items: CATALOG_ITEMS },
-            { title: "Primer Plato", type: "fixed", items: ["Sopa castellana con huevo poché"] },
-            {
-                title: "Segundo Plato (Reparto)",
-                type: "choose_split",
-                items: ["Merluza en salsa verde", "Cochinillo al horno"]
-            },
-            { title: "Postre", type: "fixed", items: ["Flan de queso manchego"] }
-        ]
-    },
-    {
-        id: 5,
-        name: "Menú 5",
-        price: 55.00,
-        desc: "Buen ajuste para grupos amplios con presupuesto contenido.",
-        sections: [
-            { title: "Entrantes (Elige 4)", type: "choose_many", limit: 4, items: CATALOG_ITEMS },
-            { title: "Primer Plato", type: "fixed", items: ["Ensalada templada de setas"] },
-            {
-                title: "Segundo Plato (Reparto)",
-                type: "choose_split",
-                items: ["Lenguado a la meniere", "Carrillada de ibérico al vino tinto"]
-            },
-            { title: "Postre", type: "fixed", items: ["Coulant de chocolate"] }
-        ]
-    },
-    {
-        id: 6,
-        name: "Menú 6 (Premium)",
-        price: 70.00,
-        desc: "Para eventos premium: producto top y doble elección.",
-        sections: [
-            { title: "Entrantes (Elige 4)", type: "choose_many", limit: 4, items: CATALOG_ITEMS },
-            { title: "Primer Plato", type: "fixed", items: ["Lasaña de bogavante y setas"] },
-            { title: "Segundo Plato", type: "fixed", items: ["Rodaballo salvaje al horno"] },
-            {
-                title: "Tercer Plato (Reparto)",
-                type: "choose_split",
-                items: ["Solomillo de buey con foie", "Pichón estofado al oporto"]
-            },
-            { title: "Postre", type: "fixed", items: ["Tarta de tres chocolates"] }
-        ]
-    },
-    {
-        id: 7,
-        name: "Menú 7",
-        price: 52.00,
-        desc: "Encaja con celebraciones familiares con entrantes clásicos.",
-        sections: [
-            { title: "Entrantes (Fijos)", type: "fixed", items: ["Ensaladilla rusa de bogavante", "Croquetas de jamón ibérico", "Tartar de atún rojo"] },
-            { title: "Primer Plato", type: "fixed", items: ["Crema de marisco"] },
-            { title: "Segundo Plato", type: "fixed", items: ["Entrecot de ternera gallega"] },
-            { title: "Postre", type: "fixed", items: ["Tarta de zanahoria"] }
-        ]
-    },
-    {
-        id: 8,
-        name: "Menú 8",
-        price: 50.00,
-        desc: "Práctico para comidas de empresa o grupos.",
-        sections: [
-            { title: "Entrantes (Fijos)", type: "fixed", items: ["Jamón y queso manchego", "Timbal de verduras", "Ensalada césar"] },
-            { title: "Primer Plato", type: "fixed", items: ["Sopa de pescado"] },
-            { title: "Segundo Plato", type: "fixed", items: ["Pollo de corral a la brasa"] },
-            { title: "Postre", type: "fixed", items: ["Natillas caseras"] }
-        ]
-    }
-];
 
 // State
 let state = {
-    selectedHotel: 'GUADIANA',
+    selectedHotel: Object.keys(HOTELS)[0] || 'GUADIANA',
     selectedMenu: null,
     selectedOptions: {}, // { menuId: { sectionIdx: [item IDs] or { itemId: qty } } }
     guestCount: 100,
@@ -351,11 +90,35 @@ function selectMenu(menu) {
     updateSummary();
 }
 
+function generatePresentation() {
+    const selectedCheckboxes = document.querySelectorAll('.menu-print-checkbox:checked');
+    const ids = Array.from(selectedCheckboxes).map(cb => cb.dataset.id);
+    
+    if (ids.length === 0) {
+        alert("Por favor, selecciona al menos un menú marcando su casilla en la esquina superior.");
+        return;
+    }
+    
+    const titulo = (document.getElementById('eventTitle')?.value || 'EVENTOS').trim().toUpperCase() || 'EVENTOS';
+    window.location.href = `presentacion.html?hotel=${state.selectedHotel}&menus=${ids.join(',')}&titulo=${encodeURIComponent(titulo)}`;
+}
+
+function generatePDF() {
+    // This is for the Budget PDF
+    if (!state.selectedMenu) {
+        alert("Selecciona un menú y personalízalo antes de generar el presupuesto.");
+        return;
+    }
+    window.print();
+}
+
 function renderMenus() {
     const gallery = document.getElementById('menuGrid');
     gallery.innerHTML = '';
 
-    MENUS_DATA.forEach(menu => {
+    MENUS_DATA.forEach((menu, idx) => {
+        if (menu.hidden) return; // Skip hidden menus
+        
         const card = document.createElement('div');
         card.className = 'menu-card';
         card.onclick = () => configureMenu(menu.id);
@@ -369,6 +132,9 @@ function renderMenus() {
         });
 
         card.innerHTML = `
+            <div class="menu-selection-badge" onclick="event.stopPropagation()">
+                <input type="checkbox" class="menu-print-checkbox" checked data-id="${menu.id}" style="width:20px; height:20px; cursor:pointer; accent-color:var(--accent);">
+            </div>
             <div class="menu-header">
                 <span class="menu-name">${menu.name}</span>
                 <span class="menu-price">${menu.price.toFixed(2)}€</span>
@@ -377,7 +143,7 @@ function renderMenus() {
                 ${menu.desc}
             </div>
             <ul class="menu-items">
-                ${previewItems.map(item => `<li>${item}</li>`).join('')}
+                ${previewItems.map(item => `<li>${item}${getAllergensSup(item)}</li>`).join('')}
             </ul>
              <button class="btn-select">Personalizar</button>
         `;
@@ -409,6 +175,8 @@ function renderMenuOptions() {
     const selections = state.selectedOptions[menu.id] || {};
 
     menu.sections.forEach((section, idx) => {
+        if (section.hidden) return; // Skip hidden sections
+        
         const groupEl = document.createElement('div');
         groupEl.className = 'pick-group';
         groupEl.dataset.group = idx;
@@ -427,12 +195,18 @@ function renderMenuOptions() {
         headerHtml += `</div>`;
         groupEl.innerHTML = headerHtml;
 
+        // Determine which items to render
+        let itemsToRender = section.items;
+        if (section.useCatalog) {
+            itemsToRender = CATALOG_ITEMS;
+        }
+
         // Render Items
-        if (section.type === 'choose_many' && section.items.length > 0 && typeof section.items[0] === 'object') {
+        if (section.type === 'choose_many' && itemsToRender.length > 0 && typeof itemsToRender[0] === 'object') {
             groupEl.classList.add('grid-options');
         }
 
-        section.items.forEach(item => {
+        itemsToRender.forEach(item => {
             const itemId = typeof item === 'object' ? item.t : item;
 
             // --- SPLIT Logic Rendering ---
@@ -622,46 +396,33 @@ function getSelectedForPdf() {
 
 // --- Images & PDF ---
 function preloadImages() {
-    Object.keys(HOTELS).forEach(async key => {
-        try {
-            const hotel = HOTELS[key];
-            hotel.logoBase64 = await getBase64FromUrl(hotel.logoPath);
-        } catch (e) {
-            console.warn(`Could not load logo for ${key}`, e);
-        }
-    });
-}
-function getBase64FromUrl(url) {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = url;
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext("2d");
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0);
-            const dataURL = canvas.toDataURL("image/png");
-            resolve(dataURL);
-        };
-        img.onerror = () => resolve(null);
-    });
+    // No-op: base64 conversion removed (fails on file:// due to CORS).
+    // Logos are served directly by path.
 }
 function initHotels() {
-    const selector = document.getElementById('hotelSelector');
-    selector.innerHTML = '';
-    Object.keys(HOTELS).forEach(key => {
-        const hotel = HOTELS[key];
-        const option = document.createElement('div');
-        option.className = `hotel-option ${state.selectedHotel === key ? 'selected' : ''}`;
-        option.onclick = () => { state.selectedHotel = key; initHotels(); };
-        option.innerHTML = `
-            <img src="${hotel.logoPath}" class="hotel-logo" alt="${hotel.name}">
-            <div style="font-size:0.8rem; font-weight:bold;">${hotel.name}</div>
-        `;
-        selector.appendChild(option);
+    const selectors = [
+        document.getElementById('hotelSelector'),
+        document.getElementById('hotelSelectorSidebar')
+    ];
+    
+    selectors.forEach(selector => {
+        if (!selector) return;
+        selector.innerHTML = '';
+        Object.keys(HOTELS).forEach(key => {
+            const hotel = HOTELS[key];
+            const option = document.createElement('div');
+            option.className = `hotel-option ${state.selectedHotel === key ? 'selected' : ''}`;
+            option.onclick = () => { 
+                state.selectedHotel = key; 
+                initHotels(); 
+                if (typeof updateSummary === 'function') updateSummary(); 
+            };
+            option.innerHTML = `
+                <img src="${hotel.logo || hotel.logoPath || 'img/placeholder-logo.png'}" class="hotel-logo" alt="${hotel.name}">
+                <div style="font-size:0.75rem; font-weight:bold; line-height:1.2; margin-top:5px;">${hotel.name}</div>
+            `;
+            selector.appendChild(option);
+        });
     });
 }
 function setupEventListeners() {
@@ -715,7 +476,7 @@ function showBudgetPreview() {
                 ${hotel.address}<br>
                 Tel: ${hotel.tel} · <a href="${hotel.web}" target="_blank" style="color:inherit;">${hotel.web}</a>
             </div>
-            <img src="${hotel.logoPath}" style="height:60px; object-fit:contain;" alt="Logo" onerror="this.style.display='none'">
+            <img src="${hotel.logoPath || hotel.logo || 'img/placeholder-logo.png'}" style="height:60px; object-fit:contain;" alt="Logo" onerror="this.style.display='none'">
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid #e2e8f0; padding-bottom:10px; margin-bottom:20px;">
@@ -735,25 +496,28 @@ function showBudgetPreview() {
 
     // Menu Breakdown
     state.selectedMenu.sections.forEach((sec, idx) => {
+        if (sec.hidden) return; // Skip hidden sections
+        
         const selData = selections[idx];
 
         if (sec.type === 'fixed') {
-            html += `<li><strong>${sec.title}:</strong> ${sec.items.join(', ')}</li>`;
+            const itemsWithAl = sec.items.map(item => `${item}${getAllergensSup(item)}`);
+            html += `<li><strong>${sec.title}:</strong> ${itemsWithAl.join(', ')}</li>`;
         } else if (sec.type === 'choose_one') {
             const val = (selData && selData[0]) || 'Pendiente de elección';
-            html += `<li><strong>${sec.title}:</strong> ${val}</li>`;
+            html += `<li><strong>${sec.title}:</strong> ${val}${getAllergensSup(val)}</li>`;
         } else if (sec.type === 'choose_many') {
             const items = selData || [];
             if (items.length > 0) {
                 html += `<li><strong>${sec.title}:</strong><br>`;
-                items.forEach(i => html += `&nbsp;&nbsp;• ${i}<br>`);
+                items.forEach(i => html += `&nbsp;&nbsp;• ${i}${getAllergensSup(i)}<br>`);
                 html += `</li>`;
             }
         } else if (sec.type === 'choose_split') {
             const quantities = selData || {};
             const parts = [];
             Object.entries(quantities).forEach(([item, qty]) => {
-                if (qty > 0) parts.push(`${item} (${qty})`);
+                if (qty > 0) parts.push(`${item}${getAllergensSup(item)} (${qty})`);
             });
             if (parts.length > 0) {
                 html += `<li><strong>${sec.title} (Reparto):</strong><br>&nbsp;&nbsp;${parts.join('<br>&nbsp;&nbsp;')}</li>`;

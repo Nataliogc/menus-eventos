@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Configuración | Menús Eventos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --admin-bg: #f8fafc;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            background-color: var(--admin-bg);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Admin Sidebar */
+        .admin-sidebar {
+            width: var(--sidebar-width);
+            background: #0f172a;
+            color: white;
+            padding: 2rem 1rem;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-sizing: border-box;
+        }
+
+        .admin-logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+            color: #f59e0b; /* Amber 500 */
+        }
+
+        .nav-item {
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #1e293b;
+            color: white;
+        }
+
+        .nav-item.active {
+            border-left: 4px solid #f59e0b;
+        }
+
+        /* Main Content */
+        .admin-main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem 3rem;
+            box-sizing: border-box;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .admin-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            margin: 0;
+            color: #0f172a;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s;
+        }
+        
+        .admin-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .admin-card h3 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #1e293b;
+        }
+
+        /* Forms */
+        .admin-form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .admin-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #64748b;
+        }
+
+        .admin-input, .admin-select, .admin-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .admin-input:focus, .admin-textarea:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        /* Tables for Catalog */
+        .catalog-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .catalog-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .catalog-table th, .catalog-table td {
+            padding: 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .catalog-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            background: white;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+
+        .btn-icon:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-danger { color: #ef4444; border-color: #fee2e2; }
+        .btn-danger:hover { background: #fef2f2; }
+
+        /* Floating Save Button */
+        .admin-actions-bar {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        /* Modals */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .admin-modal.active { display: flex; }
+
+        .modal-inner {
+            background: white;
+            width: 100%;
+            max-width: 650px;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .export-area {
+            background: #0f172a;
+            color: #38bdf8; /* Sky 400 */
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.8rem;
+            white-space: pre;
+            margin-top: 0.5rem;
+            max-height: 300px;
+            overflow: auto;
+            border: 1px solid #1e293b;
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .badge-sup {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Section editor inside Menu Modal */
+        .section-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-primary {
+            background: #f59e0b;
+            color: #0f172a;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background: #f8fafc;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+
+        .btn-secondary:active {
+            background: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+    <nav class="admin-sidebar">
+        <div class="admin-logo">Menús Eventos</div>
+        <div class="nav-item active" id="nav-menus" onclick="switchTab('menus')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Gestión de Menús
+        </div>
+        <div class="nav-item" id="nav-catalog" onclick="switchTab('catalog')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+            Catálogo / Platos
+        </div>
+        <div class="nav-item" id="nav-hotels" onclick="switchTab('hotels')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            Hoteles
+        </div>
+        <div class="nav-item" id="nav-presentation" onclick="switchTab('presentation')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            Generar Carta
+        </div>
+        <div style="flex-grow:1"></div>
+        <div class="nav-item" onclick="exportConfig()" style="color:#10b981; font-weight:700;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            Sincronizar / Guardar
+        </div>
+        <a href="index.html" class="nav-item" style="text-decoration:none">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            Volver a la Web
+        </a>
+    </nav>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <h1 class="admin-title" id="tabTitle">Gestión de Menús</h1>
+                <p id="tabDesc" style="color:#64748b; margin-top:0.5rem;">Crea y modifica la estructura de precios y platos para cada menú.</p>
+            </div>
+            <div class="admin-actions" style="display:flex; gap:12px;">
+                <button class="btn-secondary" onclick="exportConfig()" style="border-color:#10b981; color:#10b981;">💾 Guardar Permanente</button>
+                <button class="btn-secondary" onclick="createPremiumMenu()" style="border-color:#f59e0b; color:#f59e0b;">⭐ Crear Menú Premium</button>
+                <button class="btn-primary" id="btnAddNew" onclick="openCreateModal()">+ Añadir Nuevo</button>
+            </div>
+        </header>
+
+        <!-- Menus Tab -->
+        <div id="tab-menus" class="tab-content active">
+            <div class="card-grid" id="menusGrid">
+                <!-- Injected by Admin JS -->
+            </div>
+        </div>
+
+        <!-- Catalog Tab -->
+        <div id="tab-catalog" class="tab-content">
+            <!-- FILTER BAR -->
+            <div class="filter-bar" style="display:flex; gap:15px; margin-bottom:20px; background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.05); align-items:center;">
+                <div style="flex:1; position:relative;">
+                    <input type="text" id="catalogSearch" class="admin-input" placeholder="🔍 Buscar por nombre o ingredientes..." style="padding-left:35px; margin-bottom:0;">
+                </div>
+                <div style="width:200px;">
+                    <select id="catalogCategoryFilter" class="admin-select" style="margin-bottom:0;">
+                        <option value="all">Todas las categorías</option>
+                        <option value="Entrante">Entrantes</option>
+                        <option value="Primer Plato">Primeros</option>
+                        <option value="Segundo Plato">Segundos</option>
+                        <option value="Tercer Plato">Terceros</option>
+                        <option value="Postre">Postres</option>
+                        <option value="Sin categoría">Sin categoría</option>
+                    </select>
+                </div>
+            </div>
+
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Plato / Descripción</th>
+                            <th>Suplemento</th>
+                            <th>Alérgenos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="catalogTableBody">
+                        <!-- Injected by Admin JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Hotels Tab -->
+        <div id="tab-hotels" class="tab-content">
+            <div class="card-grid" id="hotelsGrid">
+                <!-- Injected by Admin JS -->
+            </div>
+        </div>
+
+        <!-- Presentation Tab -->
+        <div id="tab-presentation" class="tab-content">
+            <div style="background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); max-width: 900px; margin: 0 auto;">
+                <h3 style="font-family:'Outfit', sans-serif; margin-bottom: 2rem; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem;">Configuración de la Presentación</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem;">
+                    <div>
+                        <div class="admin-form-group">
+                            <label class="admin-label">Título de Portada (ej. COMUNIONES)</label>
+                            <input type="text" id="presTitle" class="admin-input" value="EVENTOS" placeholder="EVENTOS">
+                        </div>
+                        <div class="admin-form-group">
+                            <label class="admin-label">Nombre del Evento / Cliente</label>
+                            <input type="text" id="presClient" class="admin-input" placeholder="Nombre del cliente">
+                        </div>
+                        <div class="admin-form-group">
+                            <label class="admin-label">Fecha del Evento</label>
+                            <input type="date" id="presDate" class="admin-input">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="admin-label">Sede / Hotel</label>
+                        <div id="presHotelSelector" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+                            <!-- Injected by Admin JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="font-family:'Outfit', sans-serif; margin-bottom: 1.5rem; color: #475569;">Selecciona los Menús para Incluir</h4>
+                <div id="presMenuSelector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
+                    <!-- Injected by Admin JS -->
+                </div>
+
+                <div style="text-align: center; padding-top: 2rem; border-top: 1px solid #f1f5f9;">
+                    <button class="btn-primary" onclick="generateFromAdmin()" style="padding: 1rem 3rem; font-size: 1.1rem;">🚀 Generar Carta de Presentación</button>
+                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 1rem;">Se abrirá en una pestaña nueva lista para imprimir o guardar como PDF.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Generic Modal for Forms -->
+    <div id="adminModal" class="admin-modal">
+        <div class="modal-inner">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid #f1f5f9; position:sticky; top:0; background:white; z-index:10; margin-top:-0.5rem;">
+                <h2 id="modalTitle" style="font-family:'Outfit', sans-serif; margin:0;">Editar Elemento</h2>
+                <div style="display:flex; gap:12px;">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Salir</button>
+                    <button type="submit" form="adminForm" class="btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+            
+            <form id="adminForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="editId">
+                <div id="formFields">
+                    <!-- Dynamic fields based on mode -->
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="admin-modal">
+        <div class="modal-inner" style="max-width: 850px;">
+            <h2 style="font-family:'Outfit', sans-serif;">Sincronizar Cambios</h2>
+            <p style="color:#64748b; margin-bottom:2rem;">Dado que esta es una web estática, para que los cambios sean permanentes (producción) debes copiar el siguiente código y pegarlo en el archivo <b>js/data.js</b> reemplazando todo su contenido.</p>
+            
+            <div class="admin-form-group">
+                <label class="admin-label">Contenido para js/data.js</label>
+                <div style="position:relative;">
+                    <div id="exportDataJs" class="export-area"></div>
+                    <button class="btn-icon" style="position:absolute; top:10px; right:10px; background:#1e293b; border-color:#334155;" title="Copiar" onclick="copyToClipboard('exportDataJs')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; margin-top:2rem;">
+                <button class="btn-primary" onclick="closeExportModal()">Hecho</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

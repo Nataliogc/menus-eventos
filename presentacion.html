@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta de Presentación | Menús Eventos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2d5a27; /* Forest Green */
+            --dark: #1a1a1a;
+            --cream: #ffffff;
+            --muted: #4a4a4a;
+            --allergen: #b25c4a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f4f4f4; font-family: 'Montserrat', sans-serif; }
+
+        /* ── TOOLBAR ── */
+        .toolbar {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+        }
+        .btn-print {
+            padding: 12px 28px; background: var(--primary); color: white;
+            border: none; border-radius: 4px; cursor: pointer;
+            font-family: 'Montserrat', sans-serif; font-weight: 700;
+            font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+        }
+
+        /* ── PAGE SHELL ── */
+        .menu-page {
+            width: 860px;
+            height: 1120px; /* A4 standard */
+            margin: 28px auto;
+            background: var(--cream);
+            position: relative;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            page-break-after: always;
+            break-after: page;
+            box-shadow: 0 0 30px rgba(0,0,0,0.05);
+        }
+
+        /* ══════════════════════════════════
+           PORTADA (Split Screen)
+        ══════════════════════════════════ */
+        .cover-body {
+            height: 1120px;
+            display: flex; flex-direction: row;
+            padding: 0; align-items: stretch;
+            background: white;
+        }
+        .cover-img {
+            flex: 1.4;
+            background: url('img/event-cover.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+        .cover-img::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 85%, white 100%);
+        }
+        .cover-content {
+            flex: 1;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 50px;
+            text-align: center;
+            min-width: 0; /* Prevent flex blowout */
+        }
+        .cover-logo {
+            max-height: 90px; max-width: 100%;
+            margin-bottom: 50px; object-fit: contain;
+        }
+        .cover-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700; text-transform: uppercase;
+            color: var(--dark); line-height: 1.1; margin-bottom: 20px;
+            letter-spacing: 0.1em;
+            word-wrap: break-word;
+        }
+        .cover-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem; font-weight: 500; color: var(--primary); /* Neutral green */
+            margin-bottom: 50px; text-transform: uppercase; letter-spacing: 0.2em;
+        }
+        .cover-divider {
+            width: 80px; height: 1px; background: #d1d5db; margin-bottom: 50px;
+        }
+        .cover-hotel-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem; font-weight: 600; color: var(--dark);
+            text-transform: uppercase; letter-spacing: 0.15em;
+            line-height: 1.2;
+        }
+        /* ═══════════════════════════════════
+           PÁGINAS DE MENÚ
+        ════════════════════════════════════ */
+        .content-body {
+            flex: 1; display: flex; flex-direction: column;
+            padding: 30px 80px 5px; /* Ultra compact padding */
+            min-height: 0;
+        }
+        .page-header {
+            flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid #f0f0f0;
+        }
+        .page-header-txt {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.55rem; font-weight: 700; color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .menus-area {
+            flex: 1; display: flex; flex-direction: column; justify-content: space-around;
+            min-height: 0;
+        }
+
+        .menu-half {
+            flex: 1; display: flex; flex-direction: column; padding: 2px 0;
+            justify-content: center;
+        }
+        .menu-divider {
+            flex-shrink: 0; height: 1px; background: #f0f0f0; margin: 8px 0;
+        }
+
+        .menu-ttl {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.6rem; font-weight: 700; color: var(--primary);
+            text-transform: uppercase; text-align: center; margin-bottom: 10px;
+        }
+
+        /* Sections */
+        .sec-row { margin-bottom: 6px; }
+        .sec-lbl {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem; font-weight: 700;
+            text-decoration: underline; color: var(--primary);
+            margin-bottom: 4px; text-align: left;
+        }
+        .sec-dish {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem; color: var(--dark);
+            line-height: 1.25; margin-bottom: 2px; text-align: center;
+        }
+        .sec-dish sup {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.5rem; color: var(--allergen);
+            font-weight: 400; margin-left: 2px;
+        }
+
+        /* Price */
+        .menu-price {
+            margin-top: 20px; text-align: right; 
+            padding-right: 10px;
+        }
+        .price-badge {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem; font-weight: 700; color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            display: inline-block; padding-bottom: 3px;
+        }
+        .price-incl {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.75rem; font-style: italic; color: #999; margin-top: 2px;
+            display: block;
+        }
+
+        /* Allergen footer */
+        .allergen-footer {
+            flex-shrink: 0; border-top: 1px solid #f0f0f0;
+            padding: 10px 60px 5px; background: #fff;
+            position: relative; z-index: 10;
+        }
+        .allergen-footer img { width: 100%; height: auto; display: block; margin-bottom: 5px; }
+
+        .footer-contact {
+            text-align: center; font-size: 0.6rem; color: #94a3b8;
+            font-family: 'Montserrat', sans-serif; letter-spacing: 0.05em;
+            padding-bottom: 5px;
+        }
+
+        /* ── PRINT ── */
+        @media print {
+            body { background: white; }
+            .menu-page { margin: 0; width: 100%; box-shadow: none; }
+            .toolbar { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button class="btn-print" onclick="window.print()">🖨 Imprimir / PDF</button>
+</div>
+
+<div id="pagesContainer"></div>
+
+<script src="js/data.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hotelId   = urlParams.get('hotel') || Object.keys(HOTELS)[0];
+    const hotel     = Object.assign({}, HOTELS[hotelId] || Object.values(HOTELS)[0]);
+    const menuIds   = urlParams.get('menus')
+        ? urlParams.get('menus').split(',').map(s => parseInt(s.trim()))
+        : null;
+    const titulo    = decodeURIComponent(urlParams.get('titulo') || 'EVENTOS');
+    const cliente   = decodeURIComponent(urlParams.get('cliente') || '');
+    const fechaRaw  = urlParams.get('fecha') || '';
+    
+    let fechaFmt = '';
+    if (fechaRaw) {
+        const d = new Date(fechaRaw);
+        fechaFmt = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    const logo = hotel.logoPath || '';
+
+    // Adaptive cover title font size and spacing based on character count
+    function titleStyles(text) {
+        const l = text.length;
+        let size = '3rem';
+        let spacing = '0.15em';
+
+        // Optimized for Split Screen (approx 350-400px width)
+        if (l <= 6) { size = '3.8rem'; spacing = '0.18em'; }
+        else if (l <= 8) { size = '3.2rem'; spacing = '0.15em'; }
+        else if (l <= 10) { size = '2.8rem'; spacing = '0.12em'; }
+        else if (l <= 13) { size = '2.2rem'; spacing = '0.1em'; }
+        else if (l <= 17) { size = '1.8rem'; spacing = '0.08em'; }
+        else { size = '1.5rem'; spacing = '0.05em'; }
+
+        return `font-size: ${size}; letter-spacing: ${spacing};`;
+    }
+
+    const menus = MENUS_DATA.filter(m => {
+        if (m.hidden) return false;
+        if (menuIds && !menuIds.includes(m.id)) return false;
+        return true;
+    });
+
+    // Build a catalog lookup map for allergen resolution
+    const catalogMap = {};
+    (CATALOG_ITEMS || []).forEach(item => { catalogMap[item.t] = item; });
+
+    function getAllergenSup(item) {
+        let alStr = '';
+        if (typeof item === 'object' && item.al) {
+            alStr = item.al;
+        } else {
+            const name = typeof item === 'object' ? item.t : item;
+            const found = catalogMap[name];
+            if (found && found.al) alStr = found.al;
+        }
+        if (!alStr) return '';
+        const nums = alStr.match(/\d+/g);
+        return nums ? `<sup>(${nums.join('/')})</sup>` : '';
+    }
+
+    /* helpers */
+    function allergenBar() {
+        return `<div class="allergen-footer">
+            <img src="img/Alergenos-removebg-preview.png" alt="Alérgenos">
+            <div class="footer-contact">${hotel.address} · Tel: ${hotel.tel} · ${hotel.web}</div>
+        </div>`;
+    }
+
+    function menuHalf(menu) {
+        let secs = '';
+        (menu.sections || []).forEach(sec => {
+            if (sec.hidden) return;
+            const items = sec.items || [];
+            let dishes = '';
+            items.forEach(item => {
+                const t = typeof item === 'object' ? item.t : item;
+                const found = catalogMap[t];
+                let supHtml = '';
+                if (menu.name.toUpperCase().includes('PREMIUM') && found && found.sup > 0) {
+                    supHtml = ` <span style="font-family:'Montserrat', sans-serif; font-size:0.75rem; color:var(--primary); font-weight:600;">(+${found.sup.toFixed(2)}€)</span>`;
+                }
+                dishes += `<div class="sec-dish">${t}${getAllergenSup(item)}${supHtml}</div>`;
+            });
+            secs += `<div class="sec-row">
+                <div class="sec-lbl">${sec.title}</div>
+                ${dishes}
+            </div>`;
+        });
+
+        const showTotal = !menu.name.toUpperCase().includes('PREMIUM');
+
+        return `<div class="menu-half">
+            <div class="menu-ttl">${menu.name}</div>
+            ${secs}
+            ${showTotal ? `
+            <div class="menu-price">
+                <div class="price-badge">${menu.price.toFixed(2)} €</div>
+                <div class="price-incl">IVA Incluido · Bodega y Bebidas incluidas</div>
+            </div>` : ''}
+        </div>`;
+    }
+
+    let html = '';
+
+    /* ── COVER ── */
+    html += `<div class="menu-page">
+        <div class="cover-body">
+            <div class="cover-img"></div>
+            <div class="cover-content">
+                ${logo ? `<img src="${logo}" class="cover-logo" alt="${hotel.name}">` : ''}
+                <div class="cover-title" style="${titleStyles(titulo)}">${titulo}</div>
+                <div class="cover-subtitle">Propuesta Gastronómica ${new Date().getFullYear()}</div>
+                <div class="cover-divider"></div>
+                
+                ${cliente ? `<div style="font-family:'Cormorant Garamond', serif; font-size: 1.8rem; font-style: italic; color: var(--dark); margin-bottom: 10px;">${cliente}</div>` : ''}
+                ${fechaFmt ? `<div style="font-family:'Montserrat', sans-serif; font-size: 0.85rem; letter-spacing: 0.3em; color: var(--primary); font-weight: 600; margin-bottom: 40px; text-transform: uppercase;">${fechaFmt}</div>` : ''}
+                
+                <div class="cover-hotel-name">${hotel.name}</div>
+            </div>
+        </div>
+    </div>`;
+
+    /* ── CONTENT: 2 menus stacked ── */
+    for (let i = 0; i < menus.length; i += 2) {
+        const a = menus[i];
+        const b = menus[i + 1] || null;
+        html += `<div class="menu-page">
+            <div class="content-body">
+                <div class="page-header">
+                    <div class="page-header-txt">${hotel.name} · ${titulo}</div>
+                    ${logo ? `<img src="${logo}" style="height:32px" alt="${hotel.name}">` : ''}
+                </div>
+                <div class="menus-area">
+                    ${menuHalf(a)}
+                    ${b ? `<div class="menu-divider"></div>${menuHalf(b)}` : ''}
+                </div>
+            </div>
+            ${allergenBar()}
+        </div>`;
+    }
+
+    document.getElementById('pagesContainer').innerHTML = html;
+});
+</script>
+</body>
+</html>

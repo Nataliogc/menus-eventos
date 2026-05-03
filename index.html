@@ -12,6 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;700&display=swap"
         rel="stylesheet">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="img/MENÚS • EVENTOS.ico">
+
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
 
@@ -28,8 +31,29 @@
             <header class="hero-header">
                 <div class="hero-content">
                     <h1 class="hero-title">Experiencias Gastronómicas</h1>
-                    <p class="hero-subtitle">Seleccione la propuesta perfecta para su evento. Calidad, elegancia y
-                        sabor.</p>
+                    <p class="hero-subtitle">Seleccione la propuesta perfecta para su evento. Calidad, elegancia y sabor.</p>
+                    <div style="margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+
+                        <!-- Event Title Input -->
+                        <div style="width: 100%; max-width: 500px; text-align:center;">
+                            <label style="display:block; font-size:0.65rem; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:8px;">Título del evento</label>
+                            <input id="eventTitle" type="text" value="EVENTOS"
+                                style="width:100%; padding:12px 20px; background:rgba(255,255,255,0.08); border:1px solid rgba(245,158,11,0.5); color:white; font-size:1.6rem; font-family:'Outfit',sans-serif; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; text-align:center; border-radius:8px; outline:none; backdrop-filter:blur(5px);"
+                                placeholder="EVENTOS" maxlength="22">
+                            <p style="font-size:0.6rem; color:rgba(255,255,255,0.3); margin-top:6px;">Máx. 22 caracteres para que quede bien</p>
+                        </div>
+
+                        <button onclick="generatePresentation()" class="btn-primary" style="display: inline-block; width: auto; padding: 12px 30px; text-decoration: none; font-size: 0.9rem; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; backdrop-filter: blur(5px); cursor: pointer;">
+                             🖨️ Generar Carta de Presentación
+                        </button>
+                        
+                        <div style="width: 100%; max-width: 400px; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                            <p style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Sede del Evento:</p>
+                            <div id="hotelSelector" class="hotel-selector">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -62,7 +86,7 @@
                     <h2 class="config-title">Resumen & Datos</h2>
                     <div class="form-group">
                         <label class="form-label">Seleccione Hotel</label>
-                        <div class="hotel-selector" id="hotelSelector">
+                        <div class="hotel-selector" id="hotelSelectorSidebar">
                             <!-- Hotels injected by JS -->
                         </div>
                     </div>
@@ -112,7 +136,7 @@
     </div>
 
     <!-- Logic -->
-    <script src="js/logos.js"></script>
+    <script src="js/data.js"></script>
     <script src="js/app.js"></script>
 </body>
 
