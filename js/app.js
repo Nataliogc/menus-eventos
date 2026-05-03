@@ -27,7 +27,13 @@ let state = {
 };
 
 // Initialization
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Attempt cloud load
+    await loadCloudData();
+
+    // Reset state with potentially new hotels/menus
+    state.selectedHotel = Object.keys(HOTELS)[0] || 'GUADIANA';
+
     initHotels();
     preloadImages();
     renderMenus();

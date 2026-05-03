@@ -34,7 +34,7 @@ const ALLERGENS_LIST = [
     { id: 14, name: 'Sulfitos' }
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Ensure data is loaded
     if (typeof MENUS_DATA === 'undefined' || typeof CATALOG_ITEMS === 'undefined') {
         console.error("Data.js not loaded correctly");
@@ -42,11 +42,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Try to load from Cloud first
+    const cloudLoaded = await loadCloudData();
+    
     localMenus = JSON.parse(JSON.stringify(MENUS_DATA));
     localCatalog = JSON.parse(JSON.stringify(CATALOG_ITEMS));
     localHotels = JSON.parse(JSON.stringify(HOTELS));
 
     renderCurrentTab();
+    
+    if (cloudLoaded) {
+        console.log("Datos cargados desde la nube");
+    }
 });
 
 function resetToDefaults() {
@@ -767,17 +774,32 @@ function deleteHotel(key) {
 
 // --- EXPORT ---
 
-function exportConfig() {
-    const fullDataJs = `/**
- * DATA.JS - Centralized storage for menus and items
- * Generated via Admin Panel
- */
+async function exportConfig() {
+    // Save to localStorage as backup
+    localStorage.setItem('MENUS_DATA', JSON.stringify(localMenus));
+    localStorage.setItem('CATALOG_ITEMS', JSON.stringify(localCatalog));
+    localStorage.setItem('HOTELS', JSON.stringify(localHotels));
 
-const CATALOG_ITEMS_DEFAULT = ${JSON.stringify(localCatalog, null, 4)};
+    // SAVE TO CLOUD (SUPABASE)
+    const btn = document.querySelector('[onclick="exportConfig()"]');
+    const originalText = btn ? btn.innerHTML : '';
+    if (btn) btn.innerHTML = '⌛ Guardando...';
 
-const MENUS_DATA_DEFAULT = ${JSON.stringify(localMenus, null, 4)};
+    const success = await saveCloudData(localMenus, localCatalog, localHotels);
 
-const HOTELS_DEFAULT = ${JSON.stringify(localHotels, null, 4)};
+    if (btn) btn.innerHTML = originalText;
+
+    if (success) {
+        alert("¡Éxito! Los cambios se han guardado en la NUBE y están activos para todo el mundo.");
+    } else {
+        alert("Los cambios se han guardado LOCALMENTE en este navegador, pero no se pudieron subir a la nube. Revisa tu conexión.");
+        
+        // Manual fallback logic
+        const configText = `/** DATA.JS - Manual Export */\nconst MENUS_DATA_DEFAULT = ${JSON.stringify(localMenus)};\nconst CATALOG_ITEMS_DEFAULT = ${JSON.stringify(localCatalog)};\nconst HOTELS_DEFAULT = ${JSON.stringify(localHotels)};`;
+        document.getElementById('exportDataJs').textContent = configText;
+        document.getElementById('exportModal').classList.add('active');
+    }
+}
 
 // SYNC LOGIC: Load from localStorage if available (Source of Truth)
 if (localStorage.getItem('MENUS_DATA')) {

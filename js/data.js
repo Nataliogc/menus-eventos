@@ -2,6 +2,11 @@
  * DATA.JS - Centralized storage for menus and items
  */
 
+// SUPABASE CONFIGURATION
+const SUPABASE_URL = 'https://oqbtaapqfrllfyhrecvt.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_jR4XdQHgyXiZjBaX0NKENw_dlZ_TtyE';
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
 const CATALOG_ITEMS_DEFAULT = [
     { t: 'Croqueta de jamón con tomate cassé', category: 'Entrante', desc: 'Crujiente por fuera, cremosa por dentro.', ing: 'leche, jamón, harina, huevo', al: '3 Lácteos; 5 Cereales con gluten; 7 Huevo', sup: 0 },
     { t: 'Setas a la sartén con patatas y cremoso de yema', category: 'Entrante', desc: 'Salteado suave con toque de yema.', ing: 'setas, patatas, huevo', al: '7 Huevo', sup: 0 },
@@ -246,25 +251,45 @@ const HOTELS_DEFAULT = {
 };
 
 // SYNC LOGIC: Load from localStorage if available (Source of Truth)
-if (localStorage.getItem('MENUS_DATA')) {
-    window.MENUS_DATA = JSON.parse(localStorage.getItem('MENUS_DATA'));
-} else {
-    window.MENUS_DATA = MENUS_DATA_DEFAULT;
-}
-
-if (localStorage.getItem('CATALOG_ITEMS')) {
-    window.CATALOG_ITEMS = JSON.parse(localStorage.getItem('CATALOG_ITEMS'));
-} else {
-    window.CATALOG_ITEMS = CATALOG_ITEMS_DEFAULT;
-}
-
-if (localStorage.getItem('HOTELS')) {
-    window.HOTELS = JSON.parse(localStorage.getItem('HOTELS'));
-} else {
-    window.HOTELS = HOTELS_DEFAULT;
-}
+window.MENUS_DATA = localStorage.getItem('MENUS_DATA') ? JSON.parse(localStorage.getItem('MENUS_DATA')) : MENUS_DATA_DEFAULT;
+window.CATALOG_ITEMS = localStorage.getItem('CATALOG_ITEMS') ? JSON.parse(localStorage.getItem('CATALOG_ITEMS')) : CATALOG_ITEMS_DEFAULT;
+window.HOTELS = localStorage.getItem('HOTELS') ? JSON.parse(localStorage.getItem('HOTELS')) : HOTELS_DEFAULT;
 
 // Map to global for easy access by other scripts
-const MENUS_DATA = window.MENUS_DATA;
-const CATALOG_ITEMS = window.CATALOG_ITEMS;
-const HOTELS = window.HOTELS;
+let MENUS_DATA = window.MENUS_DATA;
+let CATALOG_ITEMS = window.CATALOG_ITEMS;
+let HOTELS = window.HOTELS;
+
+// SUPABASE CLOUD SYNC
+async function loadCloudData() {
+    if (!supabase) return;
+    try {
+        const { data, error } = await supabase.from('menus_config').select('data').eq('id', 1).single();
+        if (error) throw error;
+        if (data && data.data && Object.keys(data.data).length > 0) {
+            const cloud = data.data;
+            if (cloud.menus) { window.MENUS_DATA = cloud.menus; MENUS_DATA = cloud.menus; localStorage.setItem('MENUS_DATA', JSON.stringify(cloud.menus)); }
+            if (cloud.catalog) { window.CATALOG_ITEMS = cloud.catalog; CATALOG_ITEMS = cloud.catalog; localStorage.setItem('CATALOG_ITEMS', JSON.stringify(cloud.catalog)); }
+            if (cloud.hotels) { window.HOTELS = cloud.hotels; HOTELS = cloud.hotels; localStorage.setItem('HOTELS', JSON.stringify(cloud.hotels)); }
+            console.log("Cloud data synced successfully");
+            return true;
+        }
+    } catch (e) {
+        console.warn("Cloud sync failed, using local data", e);
+    }
+    return false;
+}
+
+async function saveCloudData(menus, catalog, hotels) {
+    if (!supabase) return;
+    const payload = { menus, catalog, hotels };
+    try {
+        const { error } = await supabase.from('menus_config').upsert({ id: 1, data: payload, updated_at: new Date() });
+        if (error) throw error;
+        console.log("Data saved to cloud successfully");
+        return true;
+    } catch (e) {
+        console.error("Cloud save failed", e);
+        return false;
+    }
+}
