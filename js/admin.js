@@ -801,35 +801,6 @@ async function exportConfig() {
     }
 }
 
-// SYNC LOGIC: Load from localStorage if available (Source of Truth)
-if (localStorage.getItem('MENUS_DATA')) {
-    window.MENUS_DATA = JSON.parse(localStorage.getItem('MENUS_DATA'));
-} else {
-    window.MENUS_DATA = MENUS_DATA_DEFAULT;
-}
-
-if (localStorage.getItem('CATALOG_ITEMS')) {
-    window.CATALOG_ITEMS = JSON.parse(localStorage.getItem('CATALOG_ITEMS'));
-} else {
-    window.CATALOG_ITEMS = CATALOG_ITEMS_DEFAULT;
-}
-
-if (localStorage.getItem('HOTELS')) {
-    window.HOTELS = JSON.parse(localStorage.getItem('HOTELS'));
-} else {
-    window.HOTELS = HOTELS_DEFAULT;
-}
-
-// Map to global for easy access by other scripts
-const MENUS_DATA = window.MENUS_DATA;
-const CATALOG_ITEMS = window.CATALOG_ITEMS;
-const HOTELS = window.HOTELS;
-`;
-    
-    document.getElementById('exportDataJs').textContent = fullDataJs;
-    document.getElementById('exportModal').classList.add('active');
-}
-
 function closeExportModal() {
     document.getElementById('exportModal').classList.remove('active');
 }

@@ -5,7 +5,7 @@
 // SUPABASE CONFIGURATION
 const SUPABASE_URL = 'https://oqbtaapqfrllfyhrecvt.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_jR4XdQHgyXiZjBaX0NKENw_dlZ_TtyE';
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const CATALOG_ITEMS_DEFAULT = [
     { t: 'Croqueta de jamón con tomate cassé', category: 'Entrante', desc: 'Crujiente por fuera, cremosa por dentro.', ing: 'leche, jamón, harina, huevo', al: '3 Lácteos; 5 Cereales con gluten; 7 Huevo', sup: 0 },
@@ -262,9 +262,9 @@ let HOTELS = window.HOTELS;
 
 // SUPABASE CLOUD SYNC
 async function loadCloudData() {
-    if (!supabase) return;
+    if (!supabaseClient) return;
     try {
-        const { data, error } = await supabase.from('menus_config').select('data').eq('id', 1).single();
+        const { data, error } = await supabaseClient.from('menus_config').select('data').eq('id', 1).single();
         if (error) throw error;
         if (data && data.data && Object.keys(data.data).length > 0) {
             const cloud = data.data;
@@ -281,10 +281,10 @@ async function loadCloudData() {
 }
 
 async function saveCloudData(menus, catalog, hotels) {
-    if (!supabase) return;
+    if (!supabaseClient) return;
     const payload = { menus, catalog, hotels };
     try {
-        const { error } = await supabase.from('menus_config').upsert({ id: 1, data: payload, updated_at: new Date() });
+        const { error } = await supabaseClient.from('menus_config').upsert({ id: 1, data: payload, updated_at: new Date() });
         if (error) throw error;
         console.log("Data saved to cloud successfully");
         return true;
